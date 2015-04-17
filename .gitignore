@@ -1,0 +1,6 @@
+# Vim swap files
+*.sw[op]
+
+# Vim plugin related folder.
+.ropeproject
+compiler/test_grammar
