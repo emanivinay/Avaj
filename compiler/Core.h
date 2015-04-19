@@ -26,6 +26,3 @@ private:
     std::vector<const Type&> argTypes;
     Code methodBody;
 };
-
-
-
