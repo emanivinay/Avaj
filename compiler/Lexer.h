@@ -23,7 +23,12 @@ enum class TokenType
 class Token
 {
 public:
-    Token(TokenType type, std::string& lexeme);
+    const TokenType type;
+    const std::string lexeme;
+
+    Token(TokenType _type, std::string& _lexeme): type(_type), lexeme(_lexeme)
+    {
+    }
 };
 
 
@@ -33,8 +38,12 @@ public:
  */
 class Lexer
 {
+private:
+
 public:
     Lexer(const std::string& source_file);
+
+    ~Lexer();
 
     /**
      * Read and return the next lexical token.
