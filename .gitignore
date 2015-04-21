@@ -9,3 +9,4 @@ compiler/test_grammar
 # Binary and Object file folders.
 bin
 obj
+tests
