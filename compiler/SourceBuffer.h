@@ -26,7 +26,7 @@ private:
     std::ifstream inputStream;
 
     /* Size of the internal buffer.*/
-    static const size_t BUFFER_SIZE = 8192;
+    static const int BUFFER_SIZE = 8192;
 
     char buffer[BUFFER_SIZE + 1];
     int curPosInBuffer;

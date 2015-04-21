@@ -23,5 +23,5 @@ void SourceBuffer::readIntoBuffer()
 {
     //TODO(Vinay) :- Implement this.
     std::string line;
-    inputStream.getline(line);
+    getline(inputStream, line);
 }
