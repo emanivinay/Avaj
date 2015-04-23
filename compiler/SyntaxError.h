@@ -6,7 +6,7 @@
 /**
  * Syntax error in the source code.
  */
-class SyntaxError: public std::exception
+class SyntaxError
 {
 public:
     SyntaxError(int _lineNo, std::string _desc):
@@ -14,13 +14,7 @@ public:
     {
     }
 
-    virtual std::string what()
-    {
-        std::ostringstream errorDesc;
-        errorDesc << desc << " in the line " << lineNo;
-        return errorDesc.str();
-    }
-
+    std::string what() const;
 private:
     // Line in source file where this error happens.
     int lineNo;
@@ -28,5 +22,4 @@ private:
     // A description of the error.
     std::string desc;
 };
-
 #endif
