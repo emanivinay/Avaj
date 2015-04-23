@@ -1,3 +1,6 @@
+#ifndef _HEADERS_H_
+#define _HEADERS_H_
+
 #include <cstdio>
 #include <cstring>
 #include <vector>
@@ -5,4 +8,6 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <exception>
+#endif
