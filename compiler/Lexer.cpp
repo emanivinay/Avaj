@@ -30,8 +30,7 @@ Token Lexer::getNextToken()
                               c == '[' ? TokenType::LEFT_SQUARE_BKT :
                               c == ']' ? TokenType::RIGHT_SQUARE_BKT :
                               c == '(' ? TokenType::LEFT_BRACKET :
-                              c == ')' ? TokenType::RIGHT_BRACKET :
-                              TokenType::FAILURE;
+                              TokenType::RIGHT_BRACKET;
 
         return Token(tokenType, std::string(1, c));
     }
