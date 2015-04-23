@@ -1,6 +1,7 @@
 #ifndef _HEADERS_H_
 #define _HEADERS_H_
 
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <vector>
