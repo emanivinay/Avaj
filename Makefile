@@ -1,16 +1,26 @@
-COMP= g++ --std=c++11 -Wall -I. -Icompiler
+COMP= g++ --std=c++11 -Wall -I. -I$(CMPLR)
+CMPLR= compiler
+BIN=bin
+OBJ=obj
 
-.PHONY: source_buffer source_buffer_driver
+.PHONY: lexer syntax_error source_buffer source_buffer_driver
 
-all: obj/SyntaxError source_buffer source_buffer_driver
+all: lexer syntax_error source_buffer source_buffer_driver
 
-obj/SyntaxError: compiler/SyntaxError.h compiler/SyntaxError.cpp
-	$(COMP) -c -o obj/SyntaxError compiler/SyntaxError.cpp
+lexer: obj/Lexer
+
+obj/Lexer: $(CMPLR)/Lexer.cpp
+	$(COMP) -c -o obj/Lexer $(CMPLR)/Lexer.cpp
+
+syntax_error: obj/SyntaxError
+
+obj/SyntaxError: $(CMPLR)/SyntaxError.h $(CMPLR)/SyntaxError.cpp
+	$(COMP) -c -o obj/SyntaxError $(CMPLR)/SyntaxError.cpp
 
 source_buffer: obj/SourceBuffer.o
 
-obj/SourceBuffer.o: obj/SyntaxError compiler/SourceBuffer.h compiler/SourceBuffer.cpp
-	$(COMP) -c -o obj/SourceBuffer.o compiler/SourceBuffer.cpp
+obj/SourceBuffer.o: obj/SyntaxError $(CMPLR)/SourceBuffer.h $(CMPLR)/SourceBuffer.cpp
+	$(COMP) -c -o obj/SourceBuffer.o $(CMPLR)/SourceBuffer.cpp
 
 source_buffer_driver: bin/SourceBufferDriver
 

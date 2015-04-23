@@ -1,4 +1,4 @@
-#include "common.h"
+#include "headers.h"
 
 
 /**
@@ -54,7 +54,7 @@ public:
     /* The matched string. */
     const std::string lexeme;
 
-    Token(TokenType _type, std::string& _lexeme):
+    Token(TokenType _type, const std::string& _lexeme):
         type(_type), lexeme(_lexeme)
     {
     }
@@ -77,5 +77,5 @@ public:
     Token getNextToken();
 
 private:
-    SourceBuffer buffer;
+    SourceBuffer sourceBuffer;
 };
