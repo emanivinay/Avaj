@@ -62,6 +62,22 @@ void SourceBuffer::readIntoBuffer()
 
 bool SourceBuffer::pushCharBack(CharUnit c)
 {
-    // TODO(Vinay) :- Implement this.
-    return false;
+    if (curReadPos > 0) {
+        curReadPos--;
+        buffer[curReadPos] = c.chr;
+        columns[curReadPos] = c.columnNo;
+        lineNo = c.lineNo;
+        return true;
+    }
+
+    // Freshly read buffer.
+    for (int i = numChars - 1;i >= 0; i--) {
+        buffer[i + 1] = buffer[i];
+        columns[i + 1] = columns[i];
+    }
+
+    lineNo = c.lineNo;
+    curReadPos = 0;
+    numChars++;
+    return true;
 }

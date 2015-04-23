@@ -21,10 +21,9 @@ public:
 };
 
 /**
- * A low level buffer used by the lexer. It provides a stream of syntactically
- * significant characters(i.e. ignores whitespace and comments), can push
- * characters back in case of parse failures, can consider whitespace when
- * needed etc..
+ * A low level buffer used by the lexer. It strips comments from the code and
+ * can push characters back in case of parse failures, can consider whitespace
+ * when needed etc..
  */
 class SourceBuffer
 {
