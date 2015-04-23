@@ -9,8 +9,10 @@
 class SourceBuffer
 {
 public:
-    SourceBuffer(const std::string& sourceFile): inputStream(sourceFile)
+    SourceBuffer(const std::string& sourceFile): inputStream(sourceFile),
+        buffer()
     {
+        curReadPos = 0;
     }
 
     ~SourceBuffer()
@@ -22,14 +24,20 @@ public:
     /* Return the next character in the buffer. */
     char getChar();
 
+    /* Push a character back into the buffer, in case of a parse failure.*/
+    bool pushCharBack(char c);
+
 private:
     std::ifstream inputStream;
 
-    /* Size of the internal buffer.*/
-    static const int BUFFER_SIZE = 8192;
+    /* Internal buffer used. */
+    std::string buffer;
 
-    char buffer[BUFFER_SIZE + 1];
-    int curPosInBuffer;
+    /* Current read position in the buffer.*/
+    int curReadPos;
+
+    /* Current line number in the source file. */
+    int lineNo;
 
     /* Read fresh data from the file into the buffer.*/
     void readIntoBuffer();
