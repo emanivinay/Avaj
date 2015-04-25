@@ -7,12 +7,6 @@ Lexer::Lexer(const std::string& sourceFile):
 {
 }
 
-static bool isBraceOrBracket(const CharUnit& c)
-{
-    static const std::string bString = "{}[]()";
-    return bString.find(c.chr) != std::string::npos;
-}
-
 Token Lexer::getNextToken()
 {
     CharUnit chrUnit = sourceBuffer.getCharUnit();
@@ -54,7 +48,42 @@ Token Lexer::getNextToken()
 
         return Token(TokenType::STRING_LITERAL, out.str());
     }
-    else {
-        return Token(TokenType::FAILURE, "");
+    else if (startsId(chrUnit)) {
+        // Read an identifier.
+        sourceBuffer.pushCharBack(chrUnit);
+        return readIdentifier();
     }
+    // All numerical tokens must start with a digit.
+    else if (isdigit(chrUnit.chr)) {
+        sourceBuffer.pushCharBack(chrUnit);
+        return readNumber();
+    }
+    else {
+        return Token(TokenType::FAILURE, std::string(1, chrUnit.chr));
+    }
+}
+
+Token Lexer::readNumber()
+{
+    // Numbers are of the form -> [0-9]+(.[0-9]*)?(E[0-9]+)?)
+    std::ostringstream out;
+    out << readDigitString();
+
+    CharUnit unit = sourceBuffer.getCharUnit();
+    if (unit.chr == '.') {
+        out << ".";
+        out << readDigitString();
+    }
+    else if (unit.chr == 'E' || unit.chr == 'e') {
+        out << unit.chr;
+        out << readDigitString();
+    } else {
+        sourceBuffer.pushCharBack(unit);
+    }
+
+    return Token(TokenType::NUMBER, out.str());
+}
+
+Token Lexer::readIdentifier()
+{
 }

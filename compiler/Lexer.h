@@ -1,6 +1,5 @@
 #include "headers.h"
 
-
 /**
  * Tokens are the syntactic units of a program. These can be identifiers,
  * keywords, string and numeric literals etc..
@@ -54,6 +53,8 @@ public:
     /* The matched string. */
     const std::string lexeme;
 
+    // TODO(Vinay) :- Add line and column numbers for better error reporting.
+
     Token(TokenType _type, const std::string& _lexeme):
         type(_type), lexeme(_lexeme)
     {
@@ -78,4 +79,44 @@ public:
 
 private:
     SourceBuffer sourceBuffer;
+
+    /* Helper methods to read specific tokens. */
+    Token readIdentifier();
+    Token readNumber();
+
+    /* Helper methods. */
+    static bool isBraceOrBracket(const CharUnit& c)
+    {
+        static const std::string bString = "{}[]()";
+        return bString.find(c.chr) != std::string::npos;
+    }
+
+    static bool startsId(const CharUnit& c)
+    {
+        return isalpha(c.chr) || c.chr == '_';
+    }
+
+    std::string readDigitString()
+    {
+        return "2";
+    }
+
+    bool readLiteral(const std::string& literal)
+    {
+        // Try to read the literal string as is.
+        stack<CharUnit> cStack;
+        for (auto c : literal) {
+            CharUnit unit = sourceBuffer.getCharUnit();
+            if (unit.chr != c) {
+                for (;!cStack.empty();cStack.pop()) {
+                    sourceBuffer.pushCharBack(cStack.top());
+                }
+                return false;
+            }
+
+            cStack.push(unit);
+        }
+
+        return true;
+    }
 };
