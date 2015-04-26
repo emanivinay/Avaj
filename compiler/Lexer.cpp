@@ -10,7 +10,6 @@ Lexer::Lexer(const std::string& sourceFile):
 Token Lexer::getNextToken()
 {
     CharUnit chrUnit = sourceBuffer.getCharUnit();
-
     if (chrUnit.chr == EOF) {
         return Token(TokenType::END_OF_FILE, "");
     }
@@ -65,25 +64,38 @@ Token Lexer::getNextToken()
 
 Token Lexer::readNumber()
 {
-    // Numbers are of the form -> [0-9]+(.[0-9]*)?(E[0-9]+)?)
+    // Numbers are of the form -> [+-]?[0-9]+(.[0-9]*)?(E[0-9]+)?)
+    std::string prefix = readSignedDigitString();
+    if (prefix.empty() || prefix == "+" || prefix == "-") {
+        return Token(TokenType::FAILURE, "");
+    }
     std::ostringstream out;
-    out << readDigitString();
-
+    out << prefix;
+    
     CharUnit unit = sourceBuffer.getCharUnit();
     if (unit.chr == '.') {
         out << ".";
         out << readDigitString();
-    }
-    else if (unit.chr == 'E' || unit.chr == 'e') {
+
+        CharUnit unit = sourceBuffer.getCharUnit();
+        if (unit.chr == 'E' || unit.chr == 'e') {
+            out << readSignedDigitString();
+            return Token(TokenType::NUMBER, out.str());
+        } else {
+            sourceBuffer.pushCharBack(unit);
+            return Token(TokenType::NUMBER, out.str());
+        }
+    } else if (unit.chr == 'E' || unit.chr == 'e') {
         out << unit.chr;
-        out << readDigitString();
+        out << readSignedDigitString();
+        return Token(TokenType::NUMBER, out.str());
     } else {
         sourceBuffer.pushCharBack(unit);
+        return Token(TokenType::NUMBER, out.str());
     }
-
-    return Token(TokenType::NUMBER, out.str());
 }
 
 Token Lexer::readIdentifier()
 {
+    return Token(TokenType::FAILURE, "NotImplementedYet");
 }

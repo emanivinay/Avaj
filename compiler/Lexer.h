@@ -96,15 +96,42 @@ private:
         return isalpha(c.chr) || c.chr == '_';
     }
 
+    /* Read a string of digits, not separated by whitespace. */
     std::string readDigitString()
     {
-        return "2";
+        std::ostringstream out;
+        while (true) {
+            CharUnit unit = sourceBuffer.getCharUnit();
+            if (!isdigit(unit.chr)) {
+                sourceBuffer.pushCharBack(unit);
+                break;
+            }
+
+            out << unit.chr;
+        }
+
+        return out.str();
+    }
+
+    /* Read a string of digits, possibly prefixed with a +/- sign. */
+    std::string readSignedDigitString()
+    {
+        std::ostringstream out;
+
+        CharUnit unit = sourceBuffer.getCharUnit();
+        if (unit.chr != '+' and unit.chr != '-' and !isdigit(unit.chr)) {
+            sourceBuffer.pushCharBack(unit);
+            return "";
+        }
+        out << unit.chr;
+        out << readDigitString();
+        return out.str();
     }
 
     bool readLiteral(const std::string& literal)
     {
         // Try to read the literal string as is.
-        stack<CharUnit> cStack;
+        std::stack<CharUnit> cStack;
         for (auto c : literal) {
             CharUnit unit = sourceBuffer.getCharUnit();
             if (unit.chr != c) {

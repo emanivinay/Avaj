@@ -35,13 +35,13 @@ void SourceBuffer::readIntoBuffer()
     lineNo++;
 
     numChars = (int)buf.size();
-    for (int i = 0;i < numChars; ++i) {
-        buffer[i] = buf[i];
+    for (int i = 0;i <= numChars; ++i) {
+        buffer[i] = i < numChars ? buf[i] : '\n';
         columns[i] = i + 1;
     }
 
     int trailingSlashes = 0, stringLiteral = 0;
-    for (int i = 0;i < numChars; ++i) {
+    for (int i = 0;i <= numChars; ++i) {
         char c = buffer[i];
         trailingSlashes = c == '/' ? (trailingSlashes + 1) : 0;
 
@@ -54,6 +54,7 @@ void SourceBuffer::readIntoBuffer()
             break;
         }
     }
+    numChars++;
 
     if (stringLiteral) {
         throw SyntaxError(lineNo, "Incomplete string literal");

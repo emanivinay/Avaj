@@ -8,12 +8,12 @@ tests: source_buffer_driver lexer_driver
 
 lexer_driver: bin/LexerDriver
 
-lexer: obj/Lexer
+lexer: source_buffer obj/Lexer
 
 bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
 	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
 
-obj/Lexer: compiler/Lexer.cpp
+obj/Lexer: compiler/Lexer.h compiler/Lexer.cpp
 	$(COMP) -c -o obj/Lexer compiler/Lexer.cpp
 
 syntax_error: obj/SyntaxError
