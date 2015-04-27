@@ -25,6 +25,10 @@ enum class TokenType
     LEFT_SQUARE_BKT,
     RIGHT_SQUARE_BKT,
 
+    // Quotes
+    SINGLE_QUOTE,
+    DOUBLE_QUOTE,
+
     // Variable names, reserved keywords.
     IDENTIFIER,
     KEYWORD,
@@ -32,13 +36,29 @@ enum class TokenType
     // Literal tokens.
     NUMBER,
     STRING_LITERAL,
+    CHAR_LITERAL,
 
     // Unary and binary operators.
     UNARY_OPERATOR,
     BINARY_OPERATOR,
 
-    EQUALS,
-    NOT_EQUALS,
+    // Boolean operators.
+    AND,
+    OR,
+    NOT,
+
+    // Bitwise operator
+    BITWISE_AND,
+    BITWISE_OR,
+    BITWISE_XOR,
+
+    // Comparison operators.
+    EQ,
+    NE,
+    LT,
+    LE,
+    GE,
+    GT,
 
     ASSIGNMENT,
 
@@ -63,10 +83,12 @@ public:
     /* The matched string. */
     const std::string lexeme;
 
-    // TODO(Vinay) :- Add line and column numbers for better error reporting.
+    /* Starting line and column numbers. */
+    const int lineNo;
+    const int columnNo;
 
-    Token(TokenType _type, const std::string& _lexeme):
-        type(_type), lexeme(_lexeme)
+    Token(TokenType _type, const std::string& _lexeme, int _line, int _col):
+        type(_type), lexeme(_lexeme), lineNo(_line), columnNo(_col)
     {
     }
 };
@@ -93,6 +115,11 @@ private:
     /* Helper methods to read specific tokens. */
     Token readIdentifier();
     Token readNumber();
+
+    Token _Token(TokenType type, std::string lexeme)
+    {
+        return Token(type, lexeme, sourceBuffer.line(), sourceBuffer.column());
+    }
 
     /* Helper methods. */
     static bool isBraceOrBracket(const CharUnit& c)
@@ -155,5 +182,20 @@ private:
         }
 
         return true;
+    }
+
+    std::string readStringLiteral(char endChar = '"')
+    {
+        std::ostringstream out;
+        char prev = endChar;
+        while (true) {
+            CharUnit unit = sourceBuffer.getCharUnit();
+            if (unit.chr == endChar and prev != '/') {
+                // String literal ends.
+                return out.str();
+            }
+            out << unit.chr;
+            prev = unit.chr;
+        }
     }
 };

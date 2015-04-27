@@ -54,7 +54,8 @@ void SourceBuffer::readIntoBuffer()
             break;
         }
     }
-    numChars++;
+    buffer[numChars++] = '\n';
+    columns[numChars - 1] = -1;
 
     if (stringLiteral) {
         throw SyntaxError(lineNo, "Incomplete string literal");

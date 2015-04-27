@@ -11,33 +11,56 @@ Token Lexer::getNextToken()
 {
     CharUnit chrUnit = sourceBuffer.getCharUnit();
     if (chrUnit.chr == EOF) {
-        return Token(TokenType::END_OF_FILE, "");
+        return _Token(TokenType::END_OF_FILE, "");
     }
     else if (chrUnit.chr == ';') {
-        return Token(TokenType::SEMI_COLON, ";");
+        return _Token(TokenType::SEMI_COLON, ";");
     }
     else if (chrUnit.chr == ',') {
-        return Token(TokenType::COMMA, ",");
+        return _Token(TokenType::COMMA, ",");
     }
     else if (chrUnit.chr == '[') {
-        return Token(TokenType::LEFT_SQUARE_BKT, "[");
+        return _Token(TokenType::LEFT_SQUARE_BKT, "[");
     }
     else if (chrUnit.chr == ']') {
-        return Token(TokenType::RIGHT_SQUARE_BKT, "]");
+        return _Token(TokenType::RIGHT_SQUARE_BKT, "]");
     }
     else if (chrUnit.chr == '{') {
-        return Token(TokenType::LEFT_BRACE, "{");
+        return _Token(TokenType::LEFT_BRACE, "{");
     }
     else if (chrUnit.chr == '}') {
-        return Token(TokenType::RIGHT_BRACE, "}");
+        return _Token(TokenType::RIGHT_BRACE, "}");
+    }
+    else if (chrUnit.chr == '?') {
+        return _Token(TokenType::QUESTION_MARK, "?");
+    }
+    else if (chrUnit.chr == ':') {
+        return _Token(TokenType::COLON, ":");
+    }
+    else if (chrUnit.chr == '"') {
+        // Read a string literal.
+        int lineNo = sourceBuffer.line(), columnNo = sourceBuffer.column();
+        std::string lexeme = readStringLiteral();
+        return Token(TokenType::STRING_LITERAL, lexeme, lineNo, columnNo);
+    }
+    else if (chrUnit.chr == '\'') {
+        // Read a character literal.
+        int lineNo = sourceBuffer.line(), columnNo = sourceBuffer.column();
+        std::string lexeme = readStringLiteral('\'');
+
+        if (lexeme.size() != 1 and (lexeme.size() == 2 and lexeme[0] != '\\')) {
+            return _Token(TokenType::FAILURE, "Invalid char literal");
+        }
+
+        return Token(TokenType::CHAR_LITERAL, lexeme, lineNo, columnNo);
     }
     else if (chrUnit.chr == '=') {
         CharUnit newUnit = sourceBuffer.getCharUnit();
         if (newUnit.chr != '=') {
             sourceBuffer.pushCharBack(newUnit);
-            return Token(TokenType::ASSIGNMENT, "=");
+            return _Token(TokenType::ASSIGNMENT, "=");
         }
-        return Token(TokenType::EQUALS, "==");
+        return _Token(TokenType::EQ, "==");
     }     
     else if (isBraceOrBracket(chrUnit)) {
         char c = chrUnit.chr;
@@ -48,7 +71,7 @@ Token Lexer::getNextToken()
                               c == '(' ? TokenType::LEFT_BRACKET :
                               TokenType::RIGHT_BRACKET;
 
-        return Token(tokenType, std::string(1, c));
+        return _Token(tokenType, std::string(1, c));
     }
     else if (isspace(chrUnit.chr)) {
         // Ignore the whitespace.
@@ -68,12 +91,28 @@ Token Lexer::getNextToken()
             out << tmp.chr;
         }
 
-        return Token(TokenType::STRING_LITERAL, out.str());
+        return _Token(TokenType::STRING_LITERAL, out.str());
     }
     else if (startsId(chrUnit)) {
         // Read an identifier.
         sourceBuffer.pushCharBack(chrUnit);
         return readIdentifier();
+    }
+    else if (chrUnit.chr == '>' || chrUnit.chr == '<') {
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            std::string op(2, '=');
+            op[0] = chrUnit.chr;
+            auto opType = chrUnit.chr == '>' ? TokenType::GE : TokenType::LE;
+            return _Token(opType, op);
+        } else {
+            sourceBuffer.pushCharBack(newUnit);
+            auto opType = chrUnit.chr == '>' ? TokenType::GT : TokenType::LT;
+            return _Token(opType, std::string(1, chrUnit.chr));
+        }
+    }
+    else if (chrUnit.chr == '!') {
+        return _Token(TokenType::NOT, std::string(1, chrUnit.chr));
     }
     else if (chrUnit.chr == '+' || chrUnit.chr == '-') {
         // Could be an operator +, -, +=, -=, ++, --.
@@ -87,19 +126,32 @@ Token Lexer::getNextToken()
         }
         else if (newUnit.chr == chrUnit.chr) {
             if (newUnit.chr == '+')
-                return Token(TokenType::INCREMENT_OPERATOR, "++");
+                return _Token(TokenType::INCREMENT_OPERATOR, "++");
             else
-                return Token(TokenType::INCREMENT_OPERATOR, "--");
+                return _Token(TokenType::INCREMENT_OPERATOR, "--");
         }
         else if (newUnit.chr == '=') {
             std::string op(2, '=');
             op[0] = chrUnit.chr;
-            return Token(TokenType::BINARY_OPERATOR, op);
+            return _Token(TokenType::BINARY_OPERATOR, op);
         }
         else {
-            return Token(TokenType::UNARY_OPERATOR,
+            return _Token(TokenType::UNARY_OPERATOR,
                             std::string(1, chrUnit.chr));
         }
+    }
+    else if (chrUnit.chr == '&' || chrUnit.chr == '|') {
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        TokenType opType = chrUnit.chr == '|' ? TokenType::BITWISE_OR : 
+                                                TokenType::BITWISE_AND;
+        if (newUnit.chr != chrUnit.chr) {
+            sourceBuffer.pushCharBack(newUnit);
+            return _Token(opType, std::string(1, chrUnit.chr));
+        }
+
+        opType = chrUnit.chr == '|' ? TokenType::OR: 
+                                      TokenType::AND;
+        return _Token(opType, std::string(2, chrUnit.chr));
     }
     // All numerical tokens must start with a digit.
     else if (isdigit(chrUnit.chr)) {
@@ -107,7 +159,7 @@ Token Lexer::getNextToken()
         return readNumber();
     }
     else {
-        return Token(TokenType::FAILURE, std::string(1, chrUnit.chr));
+        return _Token(TokenType::FAILURE, std::string(1, chrUnit.chr));
     }
 }
 
@@ -116,7 +168,7 @@ Token Lexer::readNumber()
     // Numbers are of the form -> [+-]?[0-9]+(.[0-9]*)?(E[0-9]+)?)
     std::string prefix = readSignedDigitString();
     if (prefix.empty() || prefix == "+" || prefix == "-") {
-        return Token(TokenType::FAILURE, "");
+        return _Token(TokenType::FAILURE, "");
     }
     std::ostringstream out;
     out << prefix;
@@ -130,18 +182,18 @@ Token Lexer::readNumber()
         if (unit.chr == 'E' || unit.chr == 'e') {
             out << unit.chr;
             out << readSignedDigitString();
-            return Token(TokenType::NUMBER, out.str());
+            return _Token(TokenType::NUMBER, out.str());
         } else {
             sourceBuffer.pushCharBack(unit);
-            return Token(TokenType::NUMBER, out.str());
+            return _Token(TokenType::NUMBER, out.str());
         }
     } else if (unit.chr == 'E' || unit.chr == 'e') {
         out << unit.chr;
         out << readSignedDigitString();
-        return Token(TokenType::NUMBER, out.str());
+        return _Token(TokenType::NUMBER, out.str());
     } else {
         sourceBuffer.pushCharBack(unit);
-        return Token(TokenType::NUMBER, out.str());
+        return _Token(TokenType::NUMBER, out.str());
     }
 }
 
@@ -161,7 +213,7 @@ Token Lexer::readIdentifier()
 
     std::string id = out.str();
     if (id.find("..") != std::string::npos) {
-        return Token(TokenType::FAILURE, "Invalid identifier string");
+        return _Token(TokenType::FAILURE, "Invalid identifier string");
     }
-    return Token(TokenType::IDENTIFIER, id);
+    return _Token(TokenType::IDENTIFIER, id);
 }

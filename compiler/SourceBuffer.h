@@ -47,6 +47,14 @@ public:
     /* Push a character back into the buffer, in case of a parse failure.*/
     bool pushCharBack(CharUnit c);
 
+    int line() const {return lineNo;};
+    int column() const 
+    {
+        if (curReadPos >= numChars)
+            return 0;
+        return columns[curReadPos];
+    };
+
 private:
     std::ifstream inputStream;
 
