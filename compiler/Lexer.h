@@ -35,6 +35,14 @@ enum class TokenType
     UNARY_OPERATOR,
     BINARY_OPERATOR,
 
+    EQUALS,
+    NOT_EQUALS,
+
+    ASSIGNMENT,
+
+    INCREMENT_OPERATOR,
+    DECREMENT_OPERATOR,
+
     END_OF_FILE,
 
     FAILURE,

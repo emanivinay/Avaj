@@ -79,6 +79,8 @@ bool SourceBuffer::pushCharBack(CharUnit c)
 
     lineNo = c.lineNo;
     curReadPos = 0;
+    buffer[0] = c.chr;
+    columns[0] = c.columnNo;
     numChars++;
     return true;
 }
