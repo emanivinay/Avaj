@@ -13,6 +13,8 @@ enum class TokenType
     QUESTION_MARK,
     COLON,
 
+    COMMA,
+
     // Braces, brackets, square brackets.
     LEFT_BRACE,
     RIGHT_BRACE,

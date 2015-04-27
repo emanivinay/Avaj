@@ -16,6 +16,21 @@ Token Lexer::getNextToken()
     else if (chrUnit.chr == ';') {
         return Token(TokenType::SEMI_COLON, ";");
     }
+    else if (chrUnit.chr == ',') {
+        return Token(TokenType::COMMA, ",");
+    }
+    else if (chrUnit.chr == '[') {
+        return Token(TokenType::LEFT_SQUARE_BKT, "[");
+    }
+    else if (chrUnit.chr == ']') {
+        return Token(TokenType::RIGHT_SQUARE_BKT, "]");
+    }
+    else if (chrUnit.chr == '{') {
+        return Token(TokenType::LEFT_BRACE, "{");
+    }
+    else if (chrUnit.chr == '}') {
+        return Token(TokenType::RIGHT_BRACE, "}");
+    }
     else if (chrUnit.chr == '=') {
         CharUnit newUnit = sourceBuffer.getCharUnit();
         if (newUnit.chr != '=') {
@@ -133,9 +148,10 @@ Token Lexer::readNumber()
 Token Lexer::readIdentifier()
 {
     std::ostringstream out;
-    while (true) {
+    for (bool first = true;true;first = false){
         CharUnit unit = sourceBuffer.getCharUnit();
-        if (!startsId(unit)) {
+        if ((!startsId(unit) && unit.chr != '.') ||
+                (first && !startsId(unit))) {
             sourceBuffer.pushCharBack(unit);
             break;
         }
@@ -143,5 +159,9 @@ Token Lexer::readIdentifier()
         out << unit.chr;
     }
 
-    return Token(TokenType::IDENTIFIER, out.str());
+    std::string id = out.str();
+    if (id.find("..") != std::string::npos) {
+        return Token(TokenType::FAILURE, "Invalid identifier string");
+    }
+    return Token(TokenType::IDENTIFIER, id);
 }
