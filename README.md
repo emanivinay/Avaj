@@ -18,5 +18,5 @@ A java like compiled language.
     Heap allocated objects are long living and are the main building blocks of
     the program. These are automatically managed with GC. Stack allocated ones
     are usually function local variables like ints, references to other objects.
-    These are deleted when their scope is exited. A simpler version of C++'s
+    These are deleted when their scope is exited. Simplified version of Java
     memory model.
