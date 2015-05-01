@@ -11,8 +11,8 @@ A java like compiled language.
 3.  Compiles to an IR, which can either be converted to native code or run on a
     VM.
 
-4.  Statically typed with generics and interfaces. In later versions, automatic
-    type inferencing shall be supported.
+4.  Static type system with generics and interfaces. In later versions,
+    automatic type inferencing shall be supported.
 
 5.  Memory model - Every value can either be heap allocated or stack allocated.
     Heap allocated objects are long living and are the main building blocks of
