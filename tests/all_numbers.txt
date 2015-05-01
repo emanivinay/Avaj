@@ -1,0 +1,22 @@
+123
+234324
+343.3
+12.2
+1E12
+1E332
+-123
+-123.0E32
+1.34E12
+1.2E-12
+;;;;;
+
+class Main
+{
+    public static void main(Strings args)
+    {
+        int myAns = 42;
+        int[] numbers = {1, 2, 3, 4, 5};
+        myObj..myAttr = 23;
+        return 0;
+    }
+}

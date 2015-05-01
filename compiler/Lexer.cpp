@@ -19,6 +19,9 @@ Token Lexer::getNextToken()
     else if (chrUnit.chr == ',') {
         return _Token(TokenType::COMMA, ",");
     }
+    else if (chrUnit.chr == '.') {
+        return _Token(TokenType::PERIOD, ".");
+    }
     else if (chrUnit.chr == '[') {
         return _Token(TokenType::LEFT_SQUARE_BKT, "[");
     }
@@ -74,8 +77,16 @@ Token Lexer::getNextToken()
         return _Token(tokenType, std::string(1, c));
     }
     else if (isspace(chrUnit.chr)) {
-        // Ignore the whitespace.
-        return getNextToken();
+        // Read all the contiguous whitespace.
+        while (true) {
+            CharUnit unit = sourceBuffer.getCharUnit();
+            if (!isspace(unit.chr)) {
+                sourceBuffer.pushCharBack(unit);
+                break;
+            }
+        }
+
+        return _Token(TokenType::WHITESPACE, " ");
     }
     else if ('"' == chrUnit.chr) {
         // Read the whole string literal and return it.
@@ -93,7 +104,7 @@ Token Lexer::getNextToken()
 
         return _Token(TokenType::STRING_LITERAL, out.str());
     }
-    else if (startsId(chrUnit)) {
+    else if (alpha_(chrUnit)) {
         // Read an identifier.
         sourceBuffer.pushCharBack(chrUnit);
         return readIdentifier();
@@ -200,20 +211,15 @@ Token Lexer::readNumber()
 Token Lexer::readIdentifier()
 {
     std::ostringstream out;
-    for (bool first = true;true;first = false){
+    while (true) {
         CharUnit unit = sourceBuffer.getCharUnit();
-        if ((!startsId(unit) && unit.chr != '.') ||
-                (first && !startsId(unit))) {
+        if (!alpha_(unit)) {
             sourceBuffer.pushCharBack(unit);
             break;
         }
-
         out << unit.chr;
     }
 
     std::string id = out.str();
-    if (id.find("..") != std::string::npos) {
-        return _Token(TokenType::FAILURE, "Invalid identifier string");
-    }
     return _Token(TokenType::IDENTIFIER, id);
 }

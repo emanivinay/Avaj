@@ -14,6 +14,8 @@ enum class TokenType
     COLON,
 
     COMMA,
+    PERIOD,
+    WHITESPACE,
 
     // Braces, brackets, square brackets.
     LEFT_BRACE,
@@ -128,7 +130,7 @@ private:
         return bString.find(c.chr) != std::string::npos;
     }
 
-    static bool startsId(const CharUnit& c)
+    static bool alpha_(const CharUnit& c)
     {
         return isalpha(c.chr) || c.chr == '_';
     }
