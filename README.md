@@ -1,6 +1,8 @@
 AVAJ PROGRAMMING LANGUAGE.
 
-A java like compiled language.
+My goal in this project to to understand PL concepts and techniques through
+implementation. I'd like to start with a minimal feature set and extend it
+further.
 
 1.  A class based simplified OO language. Objects and methods are the key units
     in this programming model. Every program is a collection of objects calling
