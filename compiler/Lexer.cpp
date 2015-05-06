@@ -20,7 +20,12 @@ Token Lexer::getNextToken()
         return _Token(TokenType::COMMA, ",");
     }
     else if (chrUnit.chr == '.') {
-        return _Token(TokenType::PERIOD, ".");
+        // A dot character starts a field member/method reference.
+        Token ref = readIdentifier();
+        if (ref.lexeme.empty())
+            return _Token(TokenType::FAILURE, "Invalid field reference");
+
+        return _Token(TokenType::FIELD_REF, "." + ref.lexeme);
     }
     else if (chrUnit.chr == '[') {
         return _Token(TokenType::LEFT_SQUARE_BKT, "[");
@@ -86,7 +91,14 @@ Token Lexer::getNextToken()
             }
         }
 
-        return _Token(TokenType::WHITESPACE, " ");
+        CharUnit unit = sourceBuffer.getCharUnit();
+        if (unit.chr == '.') {
+            return _Token(TokenType::FAILURE, "A dot cant follow whitespace.");
+        }
+        sourceBuffer.pushCharBack(unit);
+        
+        // Ignore this whitespace and return the next token.
+        return getNextToken();
     }
     else if ('"' == chrUnit.chr) {
         // Read the whole string literal and return it.

@@ -35,6 +35,9 @@ enum class TokenType
     IDENTIFIER,
     KEYWORD,
 
+    // Field reference.
+    FIELD_REF,
+
     // Literal tokens.
     NUMBER,
     STRING_LITERAL,
