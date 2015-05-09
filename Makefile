@@ -1,4 +1,4 @@
-COMP= g++ --std=c++11 -Wall -I. -Icompiler
+COMP= g++ -std=c++14 -Wall -I. -Icompiler
 
 .PHONY: lexer syntax_error source_buffer tests 
 
