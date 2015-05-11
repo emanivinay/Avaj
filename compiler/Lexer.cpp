@@ -233,5 +233,9 @@ Token Lexer::readIdentifier()
     }
 
     std::string id = out.str();
+    if (KEYWORDS.count(id)) {
+        // This is a keyword.
+        return _Token(TokenType::KEYWORD, id);
+    }
     return _Token(TokenType::IDENTIFIER, id);
 }

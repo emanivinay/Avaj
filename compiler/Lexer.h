@@ -75,6 +75,12 @@ enum class TokenType
     FAILURE,
 };
 
+/* List of keywords - Each of these tokens have special significance.*/
+static const std::set<std::string> KEYWORDS = {
+    "if", "else", "while", "for", "class", "break",
+    "continue", "final", "private", "public", "static",
+    "import", "new", "return", "this", "void"
+};
 
 /**
  * Token returned by the lexer to the parser.
