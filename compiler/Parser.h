@@ -15,4 +15,7 @@ public:
 
     /* Construct AST from the given source file.*/
     AST constructAST();
+
+private:
+    Lexer lexer;
 };
