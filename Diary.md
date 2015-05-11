@@ -39,3 +39,23 @@ an AST will be presented to the semantic analysis phase, which as of now, is
 far ahead in the future for me.
 
 Signing off for today.
+
+### 05/11/15
+
+*   It looks like top down parsing should work, with extra care taken to remove
+disambiguities, eliminate left recustion and after left factoring. Parsing
+statements and expressions is the hardest part of this problem. I hope to have
+solved this in a couple days.
+
+*   The big problem is really representing all these syntactic constructs in
+C++ code. A number of abstract and derived classes must be written for
+statements, expressions, method bodies, class bodies etc.. and this is proving
+to be tedious. I find myself wishing for Haskell abstractions like Maybe and
+List monads here.
+
+*   I'm not well acquainted with C++ STL/Boost libraries. It's likely that I'll
+be reimplementing certain data structures.
+
+*   Real work only starts after the parsing is implemented. 
+
+Signing off for today.
