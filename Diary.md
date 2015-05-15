@@ -59,3 +59,9 @@ be reimplementing certain data structures.
 *   Real work only starts after the parsing is implemented. 
 
 Signing off for today.
+
+### 05/13/15
+
+*   Expressions are the at the core of the language, syntactically and
+semantically. Every othe syntactic unit is defined in terms of expressions, and
+expressions are defined only in terms of themselves.

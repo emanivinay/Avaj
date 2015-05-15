@@ -9,6 +9,34 @@
  * and group them into these syntactic units.
  */
 
+
+/* Import statements at the top of the source file. */
+class Import
+{
+public:
+    /**
+     * Name of the module being imported. Module name may be nested with
+     * periods as separators.
+     */
+    const std::string modname;
+
+    Import(const std::string& _modname): modname(_modname) {}
+};
+
+
+/* Parameter list in a method definition.*/
+class MethodParamList
+{
+public:
+    /* Type and name of a single parameter.*/
+    typedef std::pair<std::string, std::string> TypeAndNamePair;
+
+    const std::vector<TypeAndNamePair> paramList;
+
+    MethodParamList(const std::vector<TypeAndNamePair>& _paramList):
+        paramList(_paramList) {}
+};
+
 /**
  * Expressions are those units that evaluate to a value. e.g., an expression
  * 1 + 2 evaluates to 3, while the expr. "asd" evaluates to itself. Expressions

@@ -1,59 +1,63 @@
-;; Syntactic spec for Avaj.
-;; Lines starting with `;' are comments and can be ignored.
-;; Each production is specified as NON_TERMINAL ::= SYMBOL_STRING, where
-;; SYMBOL_string is a string of grammar symbols(terminals or non-terminals).
-
-;; Any word not entirely in upper case in a production stands for a terminal, 
-;; with parsing for the terminal already done in the Lexer phase.
-
-;; Within the RHS of a production, whitespace is insignificant. Avaj being a 
-;; free-form language, whitespace is insignificant even in source code, with
-;; the only exception being when it's present inside a char/string literal.
-
-;; Within a production, an expression like A* stands for zero or more
-;; repetitions of the symbol A.
-
-;; The grammar shall be unambiguous, with no left recursion and must be left
-;; factored. This allows for a top-down parsing approach.
-
-
 PROGRAM ::= IMPORT* CLASS_DEFN*
 
-IMPORT ::= import MODULE_ID ;
+IMPORT ::= `import` MODULE_ID ;
 
-MODULE_ID = [a-zA-z_](.[a-zA-Z_]+)*
+MODULE_ID = [a-zA-z](.[a-zA-Z_]+)*
 
-CLASS_DEFN ::= (public|private)? class { CLASS_BODY }
+CLASS_DEFN ::= (`public`|`private`)? `class` `{` CLASS_BODY `}`
 
 CLASS_BODY ::= (FIELD_DEFN | METHOD_DEFN)*
 
-FIELD_DEFN ::= (public|private)? static? final? id (= EXPRESSION)? ;
+TYPE_ID ::= id
 
-METHOD_DEFN ::= (public|private)? static? final? id id lparen PARAM_LIST rparen 
-                BLOCK_STATEMENT
+FIELD_DEFN ::= (`public`|`private)? `static`? `final`? TYPE_ID id (= EXPRESSION)? ;
 
-PARAM_LIST ::= EMPTY | ID ID (, ID ID)*
+METHOD_DEFN ::= (`public`|`private`)? `static`? `final`? TYPE_ID id `(` PARAM_LIST `)`
+                BLOCK_STMT
 
-EXPRESSION ::= new id lparen METHOD_ARGS rparen | ARITH_EXPR | LOGICAL_EXPR |
-                LITERAL_EXPR | MEMBER_REF
+PARAM_LIST ::= EMPTY | (TYPE_ID id) (`,` TYPE_ID id)*
 
-MEMBER_REF ::= tbd
+STATEMENT ::= HANGING_STMT `;` | BLOCK_STMT | ';` | IF_STMT | FOR_STMT |
+                WHILE_STMT
 
-METHOD_ARGS ::= EMPTY | EXPRESSION (, EXPRESSION)*
+HANGING_STMT ::= VAR_DECL | ASSIGN | EXPRESSION | `return` EXPRESSION
 
-ARITH_EXPR ::= tbd
+VAR_DECL ::= `final`? TYPE_ID ASSIGN
 
-LOGICAL_EXPR ::= tbd
+SINGLE_ASSIGN ::= id `=` EXPRESSION
 
-LITERAL_EXPR ::= number | string | true | false
+ASSIGN ::= SINGLE_ASSIGN (`,` SINGLE_ASSIGN)*
 
-STATEMENT ::= EXPRESSION | VAR_DECL | ASSIGNMENT | empty | RETURN_STATEMENT |
-                BLOCK_STATEMENT
+BLOCK_STMT ::= `{` STATEMENT* `}`
 
-VAR_DECL ::= id ASSIGNMENT
+FOR_STMT ::= `for` '(` STATEMENT EXPRESSION? `;` HANGING_STMT? `)` STATEMENT
 
-ASSIGNMENT ::= (id = EXPRESSION , )* (id = EXPRESSION) ;
+WHILE_STMT ::= `while` '(` EXPRESSION `)` STATEMENT
 
-RETURN_STATEMENT ::= return EXPRESSION ;
+IF_STMT ::= `if` `(` EXPRESSION `)` STATEMENT (`else` `if` `(` EXPRESSION `)` STATEMENT)* (`else` STATEMENT)?
 
-BLOCK_STATEMENT ::= { STATEMENT* }
+;; Expressions are ultimately constructed out of literals, ids and member refs,
+;; which we call atoms. Starting with atoms, complex expressions like
+;; arithmetic, comparision and logical expressions are constructed.
+
+;; For the first version, let's only worry about arithmetic expressions.
+
+EXPRESSION ::= ARITH | `(` EXPRESSION `)` | ATOM
+
+ATOM ::= MEMBER_REF | literal | id
+
+METHOD_CALL ::= id METHOD_ARGS
+
+METHOD_ARGS ::= `(` (EMPTY | EXPRESSION (`,` EXPRESSION)*) `)`
+
+MEMBER_REF ::= id METHOD_ARGS? (`.` id METHOD_ARGS?)*
+
+PLUS_MINUS ::= `+` | `-`
+
+M_D_MOD ::= `*` | `/` | `%`
+
+ARITH ::= PLUS_MINUS? ARITH_TERM (PLUS_MINUS ARITH_TERM)*
+
+ARITH_TERM ::= ARITH_FACTOR (M_D_MOD ARITH_FACTOR)*
+
+ARITH_FACTOR ::= PLUS_MINUS ARITH_FACTOR | `(` ARITH_EXPR `)` | ATOM
