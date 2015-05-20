@@ -1,24 +1,17 @@
-AVAJ PROGRAMMING LANGUAGE.
+### COMPILER FOR A JAVA LIKE LANGUAGE
 
-My goal in this project to to understand PL concepts and techniques through
-implementation. I'd like to start with a minimal feature set and extend it
-further.
+My goal in this project is to implement a compiler from scratch. The language
+is a simplified version of Java. 
 
-1.  A class based simplified OO language. Objects and methods are the key units
-    in this programming model. Every program is a collection of objects calling
-    each others' methods to compute desired values and achieve desired effects.
+#### LANGUAGE OVERVIEW
 
-2.  Curly brace syntax, quite similar to that of Java's.
+1.  C-style curly brace syntax. Statements, expressions, blocks etc.. are the
+syntactic elements.
 
-3.  Compiles to an IR, which can either be converted to native code or run on a
-    VM.
+2.  Class based OO language. Every program is a set of objects messaging each
+other to achieve desired effects and to compute desired results. Objects are
+created on the heap and automatically GCed when no longer in use. Certain types
+like numerics, reference types are directly allocated on stack and are deleted
+when they go out of scope. 
 
-4.  Static type system with generics and interfaces. In later versions,
-    automatic type inferencing shall be supported.
-
-5.  Memory model - Every value can either be heap allocated or stack allocated.
-    Heap allocated objects are long living and are the main building blocks of
-    the program. These are automatically managed with GC. Stack allocated ones
-    are usually function local variables like ints, references to other objects.
-    These are deleted when their scope is exited. Simplified version of Java
-    memory model.
+3.  Source files are first parsed into an AST and then into an IR.
