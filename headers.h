@@ -12,5 +12,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 #include <exception>
 #endif

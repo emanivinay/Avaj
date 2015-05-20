@@ -13,8 +13,8 @@ lexer: source_buffer obj/Lexer
 parser: lexer obj/Parser
 
 obj/Parser: 
-bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
-	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
+bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer syntax_error
+	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer obj/SyntaxError
 
 obj/Lexer: compiler/Lexer.h compiler/Lexer.cpp
 	$(COMP) -c -o obj/Lexer compiler/Lexer.cpp
@@ -31,8 +31,8 @@ obj/SourceBuffer: obj/SyntaxError compiler/SourceBuffer.h compiler/SourceBuffer.
 
 source_buffer_driver: bin/SourceBufferDriver
 
-bin/SourceBufferDriver: obj/SourceBuffer tests/SourceBufferDriver.cpp
-	$(COMP) -o bin/SourceBufferDriver tests/SourceBufferDriver.cpp obj/SourceBuffer
+bin/SourceBufferDriver: source_buffer tests/SourceBufferDriver.cpp syntax_error
+	$(COMP) -o bin/SourceBufferDriver tests/SourceBufferDriver.cpp obj/SourceBuffer obj/SyntaxError
 
 clean:
 	rm -rf bin/* obj/*

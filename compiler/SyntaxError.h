@@ -4,13 +4,13 @@
 #include "headers.h"
 
 /**
- * Syntax error in the source code.
+ * Syntax errors in the source code.
  */
-class SyntaxError: public std::exception
+class SyntaxError : public std::runtime_error
 {
 public:
-    SyntaxError(int _lineNo, std::string _desc):
-        lineNo(_lineNo), desc(_desc)
+    SyntaxError(int _lineNo, const std::string& _desc):
+        std::runtime_error(_desc), lineNo(_lineNo), desc(_desc) 
     {
     }
 
