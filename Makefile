@@ -1,8 +1,8 @@
 COMP= g++ -std=c++14 -Wall -I. -Icompiler
 
-.PHONY: lexer syntax_error source_buffer tests 
+.PHONY: lexer parser syntax_error source_buffer tests 
 
-all: lexer syntax_error source_buffer tests
+all: syntax_error source_buffer lexer parser tests
 
 tests: source_buffer_driver lexer_driver
 
@@ -10,6 +10,9 @@ lexer_driver: bin/LexerDriver
 
 lexer: source_buffer obj/Lexer
 
+parser: lexer obj/Parser
+
+obj/Parser: 
 bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
 	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer
 
