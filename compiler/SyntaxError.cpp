@@ -1,8 +1,9 @@
 #include "SyntaxError.h"
 
-std::string SyntaxError::what() const
+const char* SyntaxError::what() const noexcept
 {
-    std::ostringstream errorDesc;
-    errorDesc << desc << " in the line " << lineNo;
-    return errorDesc.str();
+    std::ostringstream out;
+    out << desc << std::endl;
+    out << "Occurring at " << lineNo;
+    return out.str().c_str();
 }

@@ -6,7 +6,7 @@
 /**
  * Syntax error in the source code.
  */
-class SyntaxError
+class SyntaxError: public std::exception
 {
 public:
     SyntaxError(int _lineNo, std::string _desc):
@@ -14,7 +14,8 @@ public:
     {
     }
 
-    std::string what() const;
+    const char* what() const noexcept;
+
 private:
     // Line in source file where this error happens.
     int lineNo;
