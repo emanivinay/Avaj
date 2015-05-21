@@ -12,40 +12,17 @@
 class Expression
 {
 public:
-   /* Parse an isolated token list into an Expression object. */
-   virtual Expression& read(std::vector<Token>& tokenList) = 0;
-
-   /**
-    * Checks if this object represents a valid expression. All Expression
-    * subtypes except for BadExpression must return true.
-    */
-   virtual bool isAValidExpression() const
-   {
-       return true;
-   }
+    virtual ~Expression() = 0;
 };
 
-/* A badly formed expression. */
-class BadExpression: public Expression
+/**
+ * Parse an isolated list of tokens into an Expression object. In top down 
+ * parsing, expression tokens cane be isolated and parsed separately. This
+ * simplifies the rest of the parsing module.
+ */
+Expression *parse(std::vector<Token>& tokens)
 {
-public:
-    BadExpression& read(std::vector<Token>& tokenList)
-    {
-        return *bad_expr();
-    }
-
-    static BadExpression* bad_expr()
-    {
-        if (nullptr == badExpr)
-            badExpr = new BadExpression();
-        return badExpr;
-    }
-
-    /* This is not a valid expression. */
-    bool isAValidExpression() const {return false;}
-
-private:
-    BadExpression() {}
-    static BadExpression *badExpr;
-};
+    // TODO(Vinay) -> Implement this.
+    return nullptr;
+}
 #endif
