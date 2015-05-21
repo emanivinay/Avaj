@@ -102,6 +102,14 @@ public:
         type(_type), lexeme(_lexeme), lineNo(_line), columnNo(_col)
     {
     }
+
+    bool operator ==(const Token& tok)
+    {
+        return type == tok.type and lexeme == tok.lexeme
+            and lineNo == tok.lineNo and columnNo == tok.columnNo;
+    }
+
+    bool operator !=(const Token& tok) {return ! (*this == tok);}
 };
 
 

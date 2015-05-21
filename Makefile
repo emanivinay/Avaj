@@ -36,7 +36,15 @@ expression: obj/Expression
 obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
 	$(COMP) -c -o obj/Expression compiler/parsing/Expression.cpp
 
-parser: expression
+class: obj/Class
+
+obj/Class: compiler/parsing/Class.h
+	$(COMP) -c -o obj/Class compiler/parsing/Class.h
+
+parser: source_buffer lexer expression obj/Parser
+
+obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
+	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp
 
 clean:
 	rm -rf bin/* obj/*

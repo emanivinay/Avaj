@@ -2,7 +2,15 @@
 #define _AST_H_
 
 #include "headers.h"
-#include "Units.h"
+
+class Import
+{
+public:
+    Import(const std::string& _importStr):
+        importString(_importStr) {}
+
+    std::string importString;
+};
 
 /**
  * Abstract Syntax Tree of a source file.
@@ -13,7 +21,6 @@ public:
     const std::vector<Import> imports;
     const std::vector<Class> classes;
 
-private:
     AST(const std::vector<Import>& _imports,
         const std::vector<Class>& _classes):
         imports(_imports), classes(_classes) {}
