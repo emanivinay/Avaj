@@ -33,8 +33,8 @@ bin/SourceBufferDriver: source_buffer tests/SourceBufferDriver.cpp syntax_error
 
 expression: obj/Expression
 
-obj/Expression: obj/Lexer obj/SourceBuffer compiler/parsing/Expression.h
-	$(COMP) -c -o obj/Expression obj/SourceBuffer obj/Lexer compiler/parsing/Expression.h
+obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
+	$(COMP) -c -o obj/Expression compiler/parsing/Expression.cpp
 
 parser: expression
 
