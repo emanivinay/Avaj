@@ -1,6 +1,6 @@
-COMP= g++ -std=c++14 -Wall -I. -Icompiler
+COMP= g++ -std=c++14 -Wall -I. -Icompiler -I'compiler/parsing'
 
-.PHONY: lexer parser syntax_error source_buffer tests 
+.PHONY: lexer parser expression syntax_error source_buffer tests 
 
 all: syntax_error source_buffer lexer parser tests
 
@@ -10,9 +10,6 @@ lexer_driver: bin/LexerDriver
 
 lexer: source_buffer obj/Lexer
 
-parser: lexer obj/Parser
-
-obj/Parser: 
 bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer syntax_error
 	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer obj/SyntaxError
 
@@ -33,6 +30,13 @@ source_buffer_driver: bin/SourceBufferDriver
 
 bin/SourceBufferDriver: source_buffer tests/SourceBufferDriver.cpp syntax_error
 	$(COMP) -o bin/SourceBufferDriver tests/SourceBufferDriver.cpp obj/SourceBuffer obj/SyntaxError
+
+expression: obj/Expression
+
+obj/Expression: obj/Lexer obj/SourceBuffer compiler/parsing/Expression.h
+	$(COMP) -c -o obj/Expression obj/SourceBuffer obj/Lexer compiler/parsing/Expression.h
+
+parser: expression
 
 clean:
 	rm -rf bin/* obj/*
