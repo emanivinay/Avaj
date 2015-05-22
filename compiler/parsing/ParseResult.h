@@ -15,7 +15,7 @@ public:
     virtual bool isParseSuccessful() const = 0;
 
     /* Return parsed value in successful case. Throw an exception in failure.*/
-    virtual T& result() = 0;
+    virtual const T& result() = 0;
 };
 
 template<class T>
@@ -27,7 +27,7 @@ public:
         return false;
     }
 
-    T& result()
+    const T& result()
     {
         throw std::logic_error("Parse attempt failed with reason - " + 
                                 failMsg);
@@ -47,12 +47,14 @@ class ParseSuccess: public ParseResult<T>
 public:
     bool isParseSuccessful() const {return true;}
 
+    // Copies the object `t` to the parseResult member. For syntax objects,
+    // default copy constructor will work correctly.
     ParseSuccess(const T& t):
        parseResult(t)
     {
     }
 
-    T& result() {return parseResult;}
+    const T& result() {return parseResult;}
 
 private:
     const T parseResult;

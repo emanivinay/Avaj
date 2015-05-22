@@ -20,7 +20,7 @@ public:
     Parser(const std::string& souceFile);
 
     /* Construct AST from the given source file.*/
-    AST constructAST();
+    ParseResult<AST>* constructAST();
 
     Token& getCurrentToken()
     {

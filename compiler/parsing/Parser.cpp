@@ -14,7 +14,7 @@ Parser::Parser(const std::string& sourceFile)
     }
 }
 
-AST Parser::constructAST()
+ParseResult<AST>* Parser::constructAST()
 {
     std::vector<Import> imports;
     std::vector<Class> classes;
@@ -22,9 +22,11 @@ AST Parser::constructAST()
     // Read all import statements and class definitions.
     
     if (getCurrentToken().type != TokenType::END_OF_FILE) {
-        throw std::runtime_error(
-                "Extraneous code at the end of the source file.");
+        // Extraneous input at the end of the file.
+        return new ParseFail<AST>(
+                "Extraneous input at the end.");
     }
 
-    return AST(imports, classes);
+    // Note := Implicit conversion to ParseResult<AST> happening here.
+    return new ParseSuccess<AST>(AST(imports, classes));
 }
