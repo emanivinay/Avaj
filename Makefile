@@ -38,10 +38,18 @@ obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
 
 class: obj/Class
 
+ast: obj/AST
+
+obj/AST: compiler/parsing/AST.h
+	$(COMP) -c -o obj/AST compiler/parsing/AST.h
+
 obj/Class: compiler/parsing/Class.h
 	$(COMP) -c -o obj/Class compiler/parsing/Class.h
 
-parser: source_buffer lexer expression obj/Parser
+parser: source_buffer lexer ast expression obj/Parser obj/ParseResult
+
+obj/ParseResult: compiler/parsing/ParseResult.h compiler/parsing/ParseResult.cpp
+	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.cpp
 
 obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
 	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp

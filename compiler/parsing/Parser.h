@@ -4,6 +4,7 @@
 #include "headers.h"
 #include "SourceBuffer.h"
 #include "Lexer.h"
+#include "ParseResult.h"
 #include "Class.h"
 #include "AST.h"
 

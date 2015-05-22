@@ -2,7 +2,9 @@
 #define _AST_H_
 
 #include "headers.h"
+#include "Class.h"
 
+/* Import statements at the beginning of the file. */
 class Import
 {
 public:
