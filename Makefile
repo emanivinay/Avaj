@@ -48,8 +48,8 @@ obj/Class: compiler/parsing/Class.h
 
 parser: source_buffer lexer ast expression obj/Parser obj/ParseResult
 
-obj/ParseResult: compiler/parsing/ParseResult.h compiler/parsing/ParseResult.cpp
-	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.cpp
+obj/ParseResult: compiler/parsing/ParseResult.h 	
+	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.h
 
 obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
 	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp

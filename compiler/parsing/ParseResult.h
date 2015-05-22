@@ -29,13 +29,16 @@ public:
 
     T& result()
     {
-        throw std::logic_error("Parse attempt failed.");
+        throw std::logic_error("Parse attempt failed with reason - " + 
+                                failMsg);
     }
 
-private:
-    static ParseFail *failure;
+    ParseFail(const std::string _failMsg):
+        failMsg(_failMsg) {}
 
-    ParseFail() {}
+private:
+    // Parse failure reason.
+    const std::string failMsg;
 };
 
 template<class T>
