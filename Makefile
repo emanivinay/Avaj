@@ -40,13 +40,18 @@ class: obj/Class
 
 ast: obj/AST
 
-obj/AST: compiler/parsing/AST.h
-	$(COMP) -c -o obj/AST compiler/parsing/AST.h
+obj/AST: compiler/parsing/AST.h compiler/parsing/AST.cpp
+	$(COMP) -c -o obj/AST compiler/parsing/AST.cpp
 
 obj/Class: compiler/parsing/Class.h
 	$(COMP) -c -o obj/Class compiler/parsing/Class.h
 
-parser: source_buffer lexer ast expression obj/Parser obj/ParseResult
+parser: token_buffer source_buffer lexer ast expression obj/Parser obj/ParseResult
+
+token_buffer: obj/TokenBuffer
+
+obj/TokenBuffer: lexer compiler/parsing/TokenBuffer.h
+	$(COMP) -c -o obj/TokenBuffer compiler/parsing/TokenBuffer.h
 
 obj/ParseResult: compiler/parsing/ParseResult.h 	
 	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.h

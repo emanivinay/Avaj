@@ -22,31 +22,7 @@ public:
     /* Construct AST from the given source file.*/
     ParseResult<AST>* constructAST();
 
-    Token& getCurrentToken()
-    {
-        if (tokenIndex >= (int)tokenList.size())
-            throw std::logic_error("Parser.tokenIndex out of range");
-
-        return tokenList[tokenIndex++];
-    }
-
-    void putTokenBack(const Token& tok)
-    {
-        if (0 == tokenIndex)
-            throw std::logic_error("No token has been read yet.");
-
-        if (tokenList[tokenIndex - 1] != tok)
-            throw std::logic_error("The new token doesn't match the old token.");
-
-        --tokenIndex;
-    }
-
 private:
-    // Parser runs the source file through the lexer once and stores all the
-    // tokens into a list.
-    std::vector<Token> tokenList;
-
-    // Index in the token list at a given stage in parsing.
-    int tokenIndex;
+    TokenBuffer tokenBuffer;
 };
 #endif

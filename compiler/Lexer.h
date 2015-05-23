@@ -1,4 +1,8 @@
+#ifndef _LEXER_H_
+#define _LEXER_H_
+
 #include "headers.h"
+#include "SourceBuffer.h"
 
 /**
  * Tokens are the syntactic units of a program. These can be identifiers,
@@ -218,3 +222,4 @@ private:
         }
     }
 };
+#endif

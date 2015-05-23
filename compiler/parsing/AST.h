@@ -2,16 +2,20 @@
 #define _AST_H_
 
 #include "headers.h"
+#include "ParseResult.h"
+#include "TokenBuffer.h"
 #include "Class.h"
 
 /* Import statements at the beginning of the file. */
-class Import
+class Import 
 {
 public:
     Import(const std::string& _importStr):
         importString(_importStr) {}
 
     std::string importString;
+
+    static ParseResult<Import>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -26,5 +30,7 @@ public:
     AST(const std::vector<Import>& _imports,
         const std::vector<Class>& _classes):
         imports(_imports), classes(_classes) {}
+
+    static ParseResult<AST>* tryParse(TokenBuffer& tokenBuffer);
 };
 #endif
