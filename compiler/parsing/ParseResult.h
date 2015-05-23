@@ -47,8 +47,8 @@ class ParseSuccess: public ParseResult<T>
 public:
     bool isParseSuccessful() const {return true;}
 
-    // Copies the object `t` to the parseResult member. For syntax objects,
-    // default copy constructor will work correctly.
+    // Constructs the `parseResult` member out of `t` argument. For syntax
+    // objects, default copy constructor will work correctly.
     ParseSuccess(const T& t):
        parseResult(t)
     {
