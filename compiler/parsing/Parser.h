@@ -22,6 +22,27 @@ public:
     /* Construct AST from the given source file.*/
     ParseResult<AST>* constructAST();
 
+    /**
+     * A generic algorithm to read multiple syntax elements of the same type at
+     * once. Tries to read as many elements as possible.
+     */
+    template<class T>
+    ParseResult<std::vector<T> >* tryParseMultiple()
+    {
+        // tryParse calls might raise exceptions, which must be handled at
+        // higher levels in the call stack.
+        std::vector<T> ret;
+        while (true) {
+            ParseResult<T> *one = T::tryParse(tokenBuffer);
+            if (!one->isParseSuccessful()) {
+                break;
+            }
+            ret.push_back(one->result());
+        }
+
+        return new ParseResult<std::vector<T> >(ret);
+    }
+
 private:
     TokenBuffer tokenBuffer;
 };
