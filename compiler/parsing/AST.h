@@ -2,6 +2,7 @@
 #define _AST_H_
 
 #include "headers.h"
+#include "SyntaxError.h"
 #include "ParseResult.h"
 #include "TokenBuffer.h"
 #include "Class.h"
