@@ -27,6 +27,7 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
     return new ParseSuccess<Import>(Import(strLiteralToken.lexeme));
 }
 
+/* Parse a source file into an abstract syntax tree(AST).*/
 ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
 {
     // Each source file has several imports followed by class definitions.
