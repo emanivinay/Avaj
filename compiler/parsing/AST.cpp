@@ -1,4 +1,5 @@
 #include "AST.h"
+#include "ParserUtils.h"
 
 ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
 {
@@ -28,5 +29,18 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
 
 ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
 {
-    return new ParseFail<AST>("AST::tryParse not implemented yet.");
+    // Each source file has several imports followed by class definitions.
+    auto parsedImports = tryParseMultiple<Import>(tokenBuffer);
+    std::vector<Import> imports = parsedImports->result();
+
+    auto parsedClassDefns = tryParseMultiple<Class>(tokenBuffer);
+    std::vector<Class> classes = parsedClassDefns->result();
+
+    Token eofToken = tokenBuffer.getCurrentToken();
+    if (eofToken.type != TokenType::END_OF_FILE) {
+        throw SyntaxError(eofToken.lineNo,
+                "Extraneous input at the end.");
+    }
+
+    return new ParseSuccess<AST>(AST(imports, classes));
 }
