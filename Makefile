@@ -31,22 +31,7 @@ source_buffer_driver: bin/SourceBufferDriver
 bin/SourceBufferDriver: source_buffer tests/SourceBufferDriver.cpp syntax_error
 	$(COMP) -o bin/SourceBufferDriver tests/SourceBufferDriver.cpp obj/SourceBuffer obj/SyntaxError
 
-expression: obj/Expression
-
-obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
-	$(COMP) -c -o obj/Expression compiler/parsing/Expression.cpp
-
-class: obj/Class
-
-ast: obj/AST
-
-obj/AST: compiler/parsing/AST.h compiler/parsing/AST.cpp
-	$(COMP) -c -o obj/AST compiler/parsing/AST.cpp
-
-obj/Class: compiler/parsing/Class.h
-	$(COMP) -c -o obj/Class compiler/parsing/Class.h
-
-parser: token_buffer source_buffer lexer ast expression obj/Parser obj/ParseResult
+##############   PARSING MODULE START ################################
 
 token_buffer: obj/TokenBuffer
 
@@ -55,6 +40,26 @@ obj/TokenBuffer: lexer compiler/parsing/TokenBuffer.h
 
 obj/ParseResult: compiler/parsing/ParseResult.h 	
 	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.h
+
+obj/ParserUtils: obj/TokenBuffer obj/ParseResult compiler/parsing/ParserUtils.h compiler/parsing/ParserUtils.cpp
+	$(COMP) -c -o obj/ParserUtils compiler/parsing/ParserUtils.cpp
+
+expression: obj/Expression
+
+obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
+	$(COMP) -c -o obj/Expression compiler/parsing/Expression.cpp
+
+class: obj/ParseResult obj/Class
+
+obj/Class: compiler/parsing/Class.h compiler/parsing/Class.cpp
+	$(COMP) -c -o obj/Class compiler/parsing/Class.cpp
+
+ast: obj/AST
+
+obj/AST: compiler/parsing/AST.h compiler/parsing/AST.cpp
+	$(COMP) -c -o obj/AST compiler/parsing/AST.cpp
+
+parser: token_buffer source_buffer lexer ast expression obj/ParseResult obj/ParserUtils obj/Parser 
 
 obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
 	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp

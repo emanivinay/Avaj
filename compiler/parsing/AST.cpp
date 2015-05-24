@@ -28,5 +28,5 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
 
 ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
 {
-    return new ParseFail<AST>("AST::tryParse NotImplementedYet");
+    return new ParseFail<AST>("AST::tryParse not implemented yet.");
 }

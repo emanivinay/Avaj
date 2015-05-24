@@ -2,6 +2,8 @@
 #define _CLASS_H_
 
 #include "headers.h"
+#include "ParseResult.h"
+#include "TokenBuffer.h"
 
 /* A data field of a class.*/
 class DataField
@@ -18,6 +20,8 @@ public:
     const bool publicness;
     const bool staticness;
     const bool finality;
+
+    static ParseResult<DataField>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /* A method definition for a class. */
@@ -35,6 +39,8 @@ public:
     const bool publicness;
     const bool staticness;
     const bool finality;
+
+    static ParseResult<MethodDefn>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -54,5 +60,7 @@ public:
     const std::vector<MethodDefn> methods;
     const bool publicness;
     const std::string name;
+
+    static ParseResult<Class>* tryParse(TokenBuffer& tokenBuffer);
 };
 #endif
