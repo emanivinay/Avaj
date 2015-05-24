@@ -4,7 +4,7 @@ COMP= g++ -std=c++14 -Wall -I. -Icompiler -I'compiler/parsing'
 
 all: syntax_error source_buffer lexer parser tests
 
-tests: source_buffer_driver lexer_driver
+tests: source_buffer_driver lexer_driver parser_driver
 
 lexer_driver: bin/LexerDriver
 
@@ -41,8 +41,8 @@ obj/TokenBuffer: lexer compiler/parsing/TokenBuffer.h
 obj/ParseResult: compiler/parsing/ParseResult.h 	
 	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.h
 
-obj/ParserUtils: obj/TokenBuffer obj/ParseResult compiler/parsing/ParserUtils.h compiler/parsing/ParserUtils.cpp
-	$(COMP) -c -o obj/ParserUtils compiler/parsing/ParserUtils.cpp
+obj/ParserUtils: obj/TokenBuffer obj/ParseResult compiler/parsing/ParserUtils.h
+	$(COMP) -c -o obj/ParserUtils compiler/parsing/ParserUtils.h
 
 expression: obj/Expression
 
@@ -56,10 +56,15 @@ obj/Class: compiler/parsing/Class.h compiler/parsing/Class.cpp
 
 ast: obj/AST
 
-obj/AST: compiler/parsing/AST.h compiler/parsing/AST.cpp
+obj/AST: obj/ParseResult obj/ParserUtils compiler/parsing/AST.h compiler/parsing/AST.cpp
 	$(COMP) -c -o obj/AST compiler/parsing/AST.cpp
 
 parser: token_buffer source_buffer lexer ast expression obj/ParseResult obj/ParserUtils obj/Parser 
+
+parser_driver: parser ast class syntax_error bin/ParserDriver lexer
+
+bin/ParserDriver: tests/ParserDriver.cpp 
+	$(COMP) -o bin/ParserDriver obj/SourceBuffer obj/Class obj/Lexer obj/SyntaxError obj/AST obj/Parser tests/ParserDriver.cpp
 
 obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
 	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp

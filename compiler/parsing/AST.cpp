@@ -31,10 +31,12 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
 ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
 {
     // Each source file has several imports followed by class definitions.
-    auto parsedImports = tryParseMultiple<Import>(tokenBuffer);
+    ParseResult<std::vector<Import> > *parsedImports = 
+                    tryParseMultiple<Import>(tokenBuffer);
     std::vector<Import> imports = parsedImports->result();
 
-    auto parsedClassDefns = tryParseMultiple<Class>(tokenBuffer);
+    ParseResult<std::vector<Class> > *parsedClassDefns =
+                    tryParseMultiple<Class>(tokenBuffer);
     std::vector<Class> classes = parsedClassDefns->result();
 
     Token eofToken = tokenBuffer.getCurrentToken();
