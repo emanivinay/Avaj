@@ -14,6 +14,9 @@ int main(int argc, char **argv)
         for (auto import : ast->result().imports)
             cout << import.importString << endl;
 
+        for (auto cls : ast->result().classes)
+            cout << cls.name << endl;
+
     } catch (SyntaxError& err) {
         cout << err.what() << endl;
     }

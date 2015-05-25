@@ -2,7 +2,9 @@
 #define _CLASS_H_
 
 #include "headers.h"
+#include "SyntaxError.h"
 #include "ParseResult.h"
+#include "ParserUtils.h"
 #include "TokenBuffer.h"
 
 /* A data field of a class.*/

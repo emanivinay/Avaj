@@ -1,2 +1,7 @@
 import "io";
 import "vector";
+
+class TestA {}
+
+public class TestB {
+}

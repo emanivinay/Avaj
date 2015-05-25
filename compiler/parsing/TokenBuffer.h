@@ -39,6 +39,45 @@ public:
         --tokenIndex;
     }
 
+    /* Push a token back. */
+    void putTokensBack(const std::vector<Token>& tokens)
+    {
+        for (auto& tok: tokens)
+            putTokenBack(tok);
+    }
+
+    bool readOneOfTheKeywords(const std::vector<std::string>& keywords)
+    {
+        Token& tok = getCurrentToken();
+        if (tok.type != TokenType::KEYWORD ||
+                std::find(keywords.begin(), keywords.end(), tok.lexeme) 
+                    == keywords.end()) {
+            putTokenBack(tok);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Read a list of tokens matching the given list of lexemes. A helper
+     * routine to read simple tokens like keywords, braces, etc..
+     */
+    bool readLexemes(const std::vector<std::string>& lexemes)
+    {
+        int tokensRead = 0;
+        for (auto& lex: lexemes) {
+            Token& tok = getCurrentToken();
+            tokensRead++;
+            if (tok.lexeme != lex) {
+                tokenIndex -= tokensRead;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 private:
     std::vector<Token> tokenList;
     int tokenIndex;
