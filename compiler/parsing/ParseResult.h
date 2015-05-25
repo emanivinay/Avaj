@@ -16,6 +16,8 @@ public:
 
     /* Return parsed value in successful case. Throw an exception in failure.*/
     virtual const T& result() = 0;
+
+    virtual ~ParseResult() {}
 };
 
 template<class T>
@@ -36,6 +38,8 @@ public:
     ParseFail(const std::string _failMsg):
         failMsg(_failMsg) {}
 
+    ~ParseFail() {}
+
 private:
     // Parse failure reason.
     const std::string failMsg;
@@ -55,6 +59,8 @@ public:
     }
 
     const T& result() {return parseResult;}
+
+    ~ParseSuccess() {}
 
 private:
     const T parseResult;

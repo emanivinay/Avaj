@@ -12,15 +12,17 @@
 template<class T>
 ParseResult<std::vector<T> >* tryParseMultiple(TokenBuffer& tokenBuffer)
 {
-    // tryParse calls might raise exceptions, which must be handled at
-    // higher levels in the call stack.
+    // While, this function itself doesn't raise any exceptions, tryParse
+    // calls might, which must be handled at higher levels in the call stack.
     std::vector<T> ret;
     while (true) {
         ParseResult<T> *one = T::tryParse(tokenBuffer);
         if (!one->isParseSuccessful()) {
+            delete one;
             break;
         }
         ret.push_back(one->result());
+        delete one;
     }
 
     return new ParseSuccess<std::vector<T> >(ret);

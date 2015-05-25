@@ -34,10 +34,12 @@ ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
     ParseResult<std::vector<Import> > *parsedImports = 
                     tryParseMultiple<Import>(tokenBuffer);
     std::vector<Import> imports = parsedImports->result();
+    delete parsedImports;
 
     ParseResult<std::vector<Class> > *parsedClassDefns =
                     tryParseMultiple<Class>(tokenBuffer);
     std::vector<Class> classes = parsedClassDefns->result();
+    delete parsedClassDefns;
 
     Token eofToken = tokenBuffer.getCurrentToken();
     if (eofToken.type != TokenType::END_OF_FILE) {

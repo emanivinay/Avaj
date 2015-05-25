@@ -14,4 +14,5 @@
 #include <iostream>
 #include <stdexcept>
 #include <exception>
+#include <memory>
 #endif
