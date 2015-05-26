@@ -2,6 +2,13 @@ import "io";
 import "vector";
 
 class TestA {
+    // public/private static final int varA;
+    int Varh;
+    final int Varh;
+    private static final int Vars;
+    private static int s;
+    static notstatic int;
+
     public static int numTestAObjs;
     public double fieldRadius;
 }

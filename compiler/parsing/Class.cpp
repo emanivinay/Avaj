@@ -1,12 +1,29 @@
 #include "Class.h"
 
-/* Try to read a data field declaration in a class body.*/
-ParseResult<DataField>* DataField::tryParse(TokenBuffer& tokenBuffer)
+/**
+ * Fields common to both data fields and methods in a class body. Common to
+ * their syntactic forms as well.
+ */
+class ClassMemberCommonData
 {
-    // Field declarations are of the form -
-    // public/private? static? final? typename id ;
+public:
+    bool publicness;
+    bool staticness;
+    bool finalness;
 
-    // Record the current state, to go back to, in case of parse fail.
+    std::string type;
+    std::string name;
+
+    ClassMemberCommonData(bool _p, bool _s, bool _f,
+            std::string _typ, std::string _na):
+        publicness(_p), staticness(_s), finalness(_f),
+        type(_typ), name(_na) {}
+};
+
+/* MethodDefn and DataField syntactic forms have qualifiers at the beginning
+ * followed by type and name tokens. Try to parse this common part. */
+static ClassMemberCommonData parseClassMemberCommon(TokenBuffer& tokenBuffer)
+{
     int startTokenBufferState = tokenBuffer.getCurrentState();
 
     bool publicness = false;
@@ -18,30 +35,46 @@ ParseResult<DataField>* DataField::tryParse(TokenBuffer& tokenBuffer)
     bool staticness = parseKeywordOptional("static", tokenBuffer);
     bool finalness = parseKeywordOptional("final", tokenBuffer);
 
+    // If either the typename or variable name token isn't found,
+    // it's a syntax error.
     Token& typeNameToken = tokenBuffer.getCurrentToken();
     if (typeNameToken.type != TokenType::IDENTIFIER) {
         tokenBuffer.setState(startTokenBufferState);
-        return new ParseFail<DataField>(
-                "Not a field declaration.");
+        throw SyntaxError(typeNameToken.lineNo,
+                "Typename not found in this class member declaration.");
     }
 
     Token& fieldNameToken = tokenBuffer.getCurrentToken();
     if (fieldNameToken.type != TokenType::IDENTIFIER) {
         tokenBuffer.setState(startTokenBufferState);
-            throw SyntaxError(fieldNameToken.lineNo,
-                    "Field name identifier not found");
+        throw SyntaxError(fieldNameToken.lineNo,
+                "Field name identifier not found");
     }
 
-    if (tokenBuffer.getCurrentToken().type != TokenType::SEMI_COLON) {
+    return ClassMemberCommonData {publicness, staticness, finalness,
+                    typeNameToken.lexeme, fieldNameToken.lexeme};
+}
+
+/* Try to read a data field declaration in a class body.*/
+ParseResult<DataField>* DataField::tryParse(TokenBuffer& tokenBuffer)
+{
+    // Field declarations are of the form -
+    // public/private? static? final? typename id ;
+
+    int startTokenBufferState = tokenBuffer.getCurrentState();
+    ClassMemberCommonData commonData = parseClassMemberCommon(tokenBuffer);
+    Token& token = tokenBuffer.getCurrentToken();
+    if (token.type != TokenType::SEMI_COLON) {
+        // This is not a field declaration. Possibly a method defn, so reset
+        // the token buffer state and return parse failure.
         tokenBuffer.setState(startTokenBufferState);
-        // Not a data field declaration.
-        return new ParseFail<DataField>(
-                "Data field not found.");
+        return new ParseFail<DataField>("Not a data field declaration.");
     }
 
     return new ParseSuccess<DataField>(
-            DataField(fieldNameToken.lexeme, typeNameToken.lexeme,
-                publicness, staticness, finalness));
+            DataField(commonData.name, commonData.type,
+                      commonData.publicness, commonData.staticness,
+                      commonData.finalness));
 }
 
 /* Try to read a method definition. */
