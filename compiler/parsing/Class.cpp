@@ -4,9 +4,44 @@
 ParseResult<DataField>* DataField::tryParse(TokenBuffer& tokenBuffer)
 {
     // Field declarations are of the form -
-    // public/private? static? typename? id? ;
+    // public/private? static? final? typename id ;
 
-    
+    // Record the current state, to go back to, in case of parse fail.
+    int startTokenBufferState = tokenBuffer.getCurrentState();
+
+    bool publicness = false;
+    if (parseKeywordOptional("public", tokenBuffer)) {
+        publicness = true;
+    } else if (parseKeywordOptional("private", tokenBuffer)) {
+    }
+
+    bool staticness = parseKeywordOptional("static", tokenBuffer);
+    bool finalness = parseKeywordOptional("final", tokenBuffer);
+
+    Token& typeNameToken = tokenBuffer.getCurrentToken();
+    if (typeNameToken.type != TokenType::IDENTIFIER) {
+        tokenBuffer.setState(startTokenBufferState);
+        return new ParseFail<DataField>(
+                "Not a field declaration.");
+    }
+
+    Token& fieldNameToken = tokenBuffer.getCurrentToken();
+    if (fieldNameToken.type != TokenType::IDENTIFIER) {
+        tokenBuffer.setState(startTokenBufferState);
+            throw SyntaxError(fieldNameToken.lineNo,
+                    "Field name identifier not found");
+    }
+
+    if (tokenBuffer.getCurrentToken().type != TokenType::SEMI_COLON) {
+        tokenBuffer.setState(startTokenBufferState);
+        // Not a data field declaration.
+        return new ParseFail<DataField>(
+                "Data field not found.");
+    }
+
+    return new ParseSuccess<DataField>(
+            DataField(fieldNameToken.lexeme, typeNameToken.lexeme,
+                publicness, staticness, finalness));
 }
 
 /* Try to read a method definition. */

@@ -1,7 +1,10 @@
 import "io";
 import "vector";
 
-class TestA {}
+class TestA {
+    public static int numTestAObjs;
+    public double fieldRadius;
+}
 
 public class TestB {
 }

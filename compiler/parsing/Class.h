@@ -23,6 +23,20 @@ public:
     const bool staticness;
     const bool finality;
 
+    std::string repr() const
+    {
+        std::ostringstream out;
+        if (publicness)
+            out << "public ";
+        if (staticness)
+            out << "static ";
+        if (finality)
+            out << "final ";
+        out << typeName << " ";
+        out << name;
+        return out.str();
+    }
+
     static ParseResult<DataField>* tryParse(TokenBuffer& tokenBuffer);
 };
 

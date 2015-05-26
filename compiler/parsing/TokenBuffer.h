@@ -20,6 +20,16 @@ public:
         }
     }
 
+    int getCurrentState() const {return tokenIndex;}
+    void setState(int index) 
+    {
+        if (index > tokenIndex || index < 0)
+            throw std::logic_error(
+                    "Invalid index to set the token buffer state");
+
+        tokenIndex = index;
+    }
+
     Token& getCurrentToken()
     {
         if (tokenIndex >= (int)tokenList.size())

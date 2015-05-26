@@ -14,8 +14,10 @@ int main(int argc, char **argv)
         for (auto import : ast->result().imports)
             cout << import.importString << endl;
 
-        for (auto cls : ast->result().classes)
-            cout << cls.name << endl;
+        for (auto cls : ast->result().classes) {
+            for (auto fld: cls.dataFields)
+                cout << fld.repr() << endl;
+        }
 
     } catch (SyntaxError& err) {
         cout << err.what() << endl;

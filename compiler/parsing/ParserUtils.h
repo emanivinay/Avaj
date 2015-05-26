@@ -2,6 +2,7 @@
 #define _PARSER_UTILS_H_
 
 #include "headers.h"
+#include "Lexer.h"
 #include "ParseResult.h"
 #include "TokenBuffer.h"
 
@@ -26,5 +27,29 @@ ParseResult<std::vector<T> >* tryParseMultiple(TokenBuffer& tokenBuffer)
     }
 
     return new ParseSuccess<std::vector<T> >(ret);
+}
+
+/**
+ * Many grammar forms have optional keywords at the beginning. e.g.,
+ * CLASS ::= `public`? ... class form has an optional public keyword at the
+ * beginning. This function tries to read+consume such a keyword. Return true
+ * and consume that keyword if its the current token. Return false without
+ * consuming any token otherwise.
+ *
+ * parseKeywordOptional("public", {"public", ...}) -> True with {"..."}
+ * remaining.
+ *
+ * parseKeywordOptional("public", {"static", ...}) -> False with {"static",
+ * ...}
+ */
+inline bool parseKeywordOptional(const std::string& kwd, TokenBuffer& tokenBuffer)
+{
+    Token& token = tokenBuffer.getCurrentToken();
+    if (token.type == TokenType::KEYWORD && token.lexeme == kwd) {
+        return true;
+    } else {
+        tokenBuffer.putTokenBack(token);
+        return false;
+    }
 }
 #endif
