@@ -2,7 +2,7 @@
 
 /**
  * Read enough tokens from the token buffer and construct an expression object.
- * In Avaj language, expressions are always terminated by either a semicolon,
+ * In Avaj language, expressions are always followed by either a semicolon,
  * comma or a right paren.
  *
  * Algorithm to parse Avaj expressions.
@@ -17,4 +17,6 @@
  */
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer)
 {
+    return new ParseFail<Expression*>(
+            "parseExpr not implemented yet.");
 }

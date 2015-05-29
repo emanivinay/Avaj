@@ -38,16 +38,28 @@ public:
     const std::string lexeme;
 };
 
+/**
+ * Either an identifier or a simple method call.
+ * e.g., bilbosAge in the statement `int bilbosAge = 111;` or
+ * countVariations(1200) in the statement `return countVariations(1200);`
+ */
 class IDOrMethodCall
 {
 public:
-    IDOrMethodCall(bool isMethodCall, std::vector<Expression*> exprs):
-        isAMethodCall(isMethodCall), argExprs(exprs) {}
+    IDOrMethodCall(bool isMethodCall, const std::string& name,
+                   const std::vector<Expression*>& exprs):
+        isAMethodCall(isMethodCall), varName(name), argExprs(exprs) {}
 
     const bool isAMethodCall;
+    const std::string varName;
     const std::vector<Expression*> argExprs;
 };
 
+/**
+ * MemberAccess is any expression for accessing a class member(field or
+ * method). Such an access can be arbitrarily deep, e.g., `a.b(1, 2).c.d(3)`
+ * Such an expression is represented here as the vector {a, b(1, 2), c, d(3)}
+ */
 class MemberAccess: public Expression
 {
 public:
@@ -57,17 +69,9 @@ public:
     const std::vector<IDOrMethodCall> members;
 };
 
-class ArithmeticExpr: public Expr
-{
-};
-
-class RelationalExpr: public Expr
-{
-};
-
-class LogicalExpr: public Expr
-{
-};
+/* Binary operator precedence table.*/
+std::map<TokenType, int> binaryOpPrecTable = 
+        {{}};
 
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer);
 #endif
