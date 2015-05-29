@@ -1,0 +1,32 @@
+CC := g++ -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
+
+# Break the project into object modules and executable drivers.
+all: test_drivers modules
+
+modules: syntax_error source_buffer lexer
+
+test_drivers: source_buffer_driver lexer_driver
+
+# SyntaxError module.
+syntax_error: compiler/SyntaxError.cpp
+	${CC} -c -o obj/SyntaxError compiler/SyntaxError.cpp
+
+# SourceBuffer module.
+source_buffer: compiler/SourceBuffer.cpp
+	${CC} -c -o obj/SourceBuffer compiler/SourceBuffer.cpp
+
+# SourceBufferDriver driver executable.
+source_buffer_driver: syntax_error source_buffer tests/SourceBufferDriver.cpp
+	${CC} -o bin/SourceBufferDriver obj/SyntaxError obj/SourceBuffer tests/SourceBufferDriver.cpp
+
+# Lexer module.
+lexer: compiler/Lexer.cpp
+	${CC} -c -o obj/Lexer compiler/Lexer.cpp
+
+# Lexer driver exe.
+lexer_driver: syntax_error source_buffer lexer tests/LexerDriver.cpp
+	${CC} -o bin/LexerDriver obj/SyntaxError obj/SourceBuffer obj/Lexer tests/LexerDriver.cpp
+
+# Clean every module and every exe.
+clean:
+	rm -rf obj/* bin/*
