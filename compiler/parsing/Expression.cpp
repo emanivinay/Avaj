@@ -1,5 +1,8 @@
 #include "Expression.h"
 
+
+Expression::~Expression() {}
+
 /**
  * Read enough tokens from the token buffer and construct an expression object.
  * In Avaj language, expressions are always followed by either a semicolon,

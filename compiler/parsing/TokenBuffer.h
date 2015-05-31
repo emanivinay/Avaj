@@ -1,6 +1,8 @@
 #ifndef _TOKEN_BUFFER_H_
 #define _TOKEN_BUFFER_H_
 
+#include "headers.h"
+#include "SyntaxError.h"
 #include "Lexer.h"
 
 class TokenBuffer
@@ -21,6 +23,7 @@ public:
     }
 
     int getCurrentState() const {return tokenIndex;}
+
     void setState(int index) 
     {
         if (index > tokenIndex || index < 0)
@@ -68,6 +71,9 @@ public:
 
         return true;
     }
+
+    // Return the line of current token.
+    int line() const {return tokenList[tokenIndex].lineNo;}
 
     /**
      * Read a list of tokens matching the given list of lexemes. A helper

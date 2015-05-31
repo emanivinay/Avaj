@@ -16,6 +16,10 @@ public:
     virtual ~Statement() = 0;
 };
 
+/**
+ * Parse a statement. Used when we know there's a statement coming up, but
+ * don't know which kind.
+ */
 ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer);
 
 /**
@@ -30,13 +34,25 @@ ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer);
 class StatementBlock: public Statement
 {
 public:
-    // Once this object is constructed, takes over the management of its child
-    // statements.
-    StatementBlock(std::vector<Statement*> stmts):
-        statements(stmts) {}
-
+    // List of statements in this block.
     std::vector<Statement*> statements;
 
     static ParseResult<StatementBlock> *tryParse(TokenBuffer& tokenBuffer);
+
+    // Once this object is constructed, takes over the management of its child
+    // statements.
+    StatementBlock(const std::vector<Statement*>& stmts):
+        statements(stmts) {}
+
+    // Statement block owns its child statement objects. Delete them and clear
+    // the vector.
+    ~StatementBlock()
+    {
+        for (auto stmtPtr: statements) {
+            delete stmtPtr;
+        }
+
+        statements.clear();
+    }
 };
 #endif

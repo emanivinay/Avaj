@@ -69,9 +69,9 @@ public:
     const std::vector<IDOrMethodCall> members;
 };
 
-/* Binary operator precedence table.*/
-std::map<TokenType, int> binaryOpPrecTable = 
-        {{}};
+/* Read binary operator precedences from a file. */
+std::map<int, std::string> readBinaryOpPrecedence(const std::string& filepath);
 
+/* Parse Avaj Expressions. */
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer);
 #endif

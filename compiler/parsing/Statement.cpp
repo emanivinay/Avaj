@@ -1,8 +1,11 @@
 #include "Statement.h"
 
+// Define the destructor.
+Statement::~Statement() {}
+
 ParseResult<StatementBlock> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
 {
-    int startTokenBufferState = tokenBuffer.getState();
+    int startTokenBufferState = tokenBuffer.getCurrentState();
 
     if (!tokenBuffer.readLexemes({"{"})) {
         return new ParseFail<StatementBlock>(
@@ -16,7 +19,7 @@ ParseResult<StatementBlock> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
             break;
         }
 
-        ParseResult<Statement*> stmt = parseStmt(tokenBuffer);
+        ParseResult<Statement*> *stmt = parseStmt(tokenBuffer);
         if (!stmt->isParseSuccessful()) {
             // syntax error.
             tokenBuffer.setState(startTokenBufferState);

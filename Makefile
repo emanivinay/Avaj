@@ -1,73 +1,63 @@
-COMP= g++ -std=c++14 -Wall -I. -Icompiler -I'compiler/parsing'
+CC := g++ -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
 
-.PHONY: lexer parser expression syntax_error source_buffer tests 
+###################### PROJECT OVERALL STRUCTURE ##############################
 
-all: syntax_error source_buffer lexer parser tests
+all: components test_drivers 
 
-tests: source_buffer_driver lexer_driver parser_driver
+components: base lexer parser
 
-lexer_driver: bin/LexerDriver
+base: syntax_error source_buffer
 
-lexer: source_buffer obj/Lexer
+test_drivers: source_buffer_driver lexer_driver parser_driver
 
-bin/LexerDriver: tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer syntax_error
-	$(COMP) -o bin/LexerDriver tests/LexerDriver.cpp obj/Lexer obj/SourceBuffer obj/SyntaxError
+########################### BASE TARGETS ######################################
 
-obj/Lexer: compiler/Lexer.h compiler/Lexer.cpp
-	$(COMP) -c -o obj/Lexer compiler/Lexer.cpp
+# SyntaxError module.
+syntax_error: compiler/SyntaxError.cpp
+	${CC} -c -o obj/SyntaxError compiler/SyntaxError.cpp
 
-syntax_error: obj/SyntaxError
+# SourceBuffer module.
+source_buffer: compiler/SourceBuffer.cpp
+	${CC} -c -o obj/SourceBuffer compiler/SourceBuffer.cpp
 
-obj/SyntaxError: compiler/SyntaxError.h compiler/SyntaxError.cpp
-	$(COMP) -c -o obj/SyntaxError compiler/SyntaxError.cpp
+# SourceBufferDriver driver exe.
+source_buffer_driver: syntax_error source_buffer tests/SourceBufferDriver.cpp
+	${CC} -o bin/SourceBufferDriver obj/SyntaxError obj/SourceBuffer tests/SourceBufferDriver.cpp
 
-source_buffer: obj/SourceBuffer
+########################### LEXER TARGETS #####################################
 
-obj/SourceBuffer: obj/SyntaxError compiler/SourceBuffer.h compiler/SourceBuffer.cpp
-	$(COMP) -c -o obj/SourceBuffer compiler/SourceBuffer.cpp
+# Lexer module.
+lexer: base compiler/Lexer.cpp
+	${CC} -c -o obj/Lexer compiler/Lexer.cpp
 
-source_buffer_driver: bin/SourceBufferDriver
+# Lexer driver exe.
+lexer_driver: lexer tests/LexerDriver.cpp
+	${CC} -o bin/LexerDriver obj/SyntaxError obj/SourceBuffer obj/Lexer tests/LexerDriver.cpp
 
-bin/SourceBufferDriver: source_buffer tests/SourceBufferDriver.cpp syntax_error
-	$(COMP) -o bin/SourceBufferDriver tests/SourceBufferDriver.cpp obj/SourceBuffer obj/SyntaxError
+########################### PARSER TARGETS ####################################
+PARSER_DIR := compiler/parsing
 
-##############   PARSING MODULE START ################################
+# Group common parser utilities here.
+parser_base: ${PARSER_DIR}/TokenBuffer.h ${PARSER_DIR}/ParserUtils.h ${PARSER_DIR}/ParseResult.h
 
-token_buffer: obj/TokenBuffer
+expression: ${PARSER_DIR}/Expression.cpp
+	${CC} -c -o obj/Expression ${PARSER_DIR}/Expression.cpp
 
-obj/TokenBuffer: lexer compiler/parsing/TokenBuffer.h
-	$(COMP) -c -o obj/TokenBuffer compiler/parsing/TokenBuffer.h
+statement: ${PARSER_DIR}/Statement.cpp
+	${CC} -c -o obj/Statement ${PARSER_DIR}/Statement.cpp
 
-obj/ParseResult: compiler/parsing/ParseResult.h 	
-	$(COMP) -c -o obj/ParseResult compiler/parsing/ParseResult.h
+class: ${PARSER_DIR}/Class.cpp
+	${CC} -c -o obj/Class ${PARSER_DIR}/Class.cpp
 
-obj/ParserUtils: obj/TokenBuffer obj/ParseResult compiler/parsing/ParserUtils.h
-	$(COMP) -c -o obj/ParserUtils compiler/parsing/ParserUtils.h
+ast: ${PARSER_DIR}/AST.cpp
+	${CC} -c -o obj/AST ${PARSER_DIR}/AST.cpp
 
-expression: obj/Expression
+parser: lexer parser_base expression statement class ast ${PARSER_DIR}/Parser.cpp
+	${CC} -c -o obj/Parser ${PARSER_DIR}/Parser.cpp
 
-obj/Expression: compiler/parsing/Expression.h compiler/parsing/Expression.cpp
-	$(COMP) -c -o obj/Expression compiler/parsing/Expression.cpp
+parser_driver: parser tests/ParserDriver.cpp
+	${CC} -o bin/ParserDriver tests/ParserDriver.cpp obj/*
 
-class: obj/ParseResult obj/Class
-
-obj/Class: compiler/parsing/Class.h compiler/parsing/Class.cpp
-	$(COMP) -c -o obj/Class compiler/parsing/Class.cpp
-
-ast: obj/AST
-
-obj/AST: obj/ParseResult obj/ParserUtils compiler/parsing/AST.h compiler/parsing/AST.cpp
-	$(COMP) -c -o obj/AST compiler/parsing/AST.cpp
-
-parser: token_buffer source_buffer lexer ast expression obj/ParseResult obj/ParserUtils obj/Parser 
-
-parser_driver: parser ast class syntax_error bin/ParserDriver lexer
-
-bin/ParserDriver: tests/ParserDriver.cpp 
-	$(COMP) -o bin/ParserDriver obj/SourceBuffer obj/Class obj/Lexer obj/SyntaxError obj/AST obj/Parser tests/ParserDriver.cpp
-
-obj/Parser: compiler/parsing/Parser.h compiler/parsing/Parser.cpp
-	$(COMP) -c -o obj/Parser compiler/parsing/Parser.cpp
-
+# Clean every module and every exe.
 clean:
-	rm -rf bin/* obj/*
+	rm -rf obj/* bin/*
