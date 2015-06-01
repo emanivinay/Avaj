@@ -49,9 +49,12 @@ enum class TokenType
     STRING_LITERAL,
     CHAR_LITERAL,
 
-    // Unary and binary operators.
-    UNARY_OPERATOR,
-    BINARY_OPERATOR,
+    // Arithmetic operators.
+    PLUS,
+    MINUS,
+    MULTIPLY,
+    DIVIDE,
+    MODULO,
 
     // Boolean operators.
     AND,
@@ -61,7 +64,8 @@ enum class TokenType
     // Bitwise operator
     BITWISE_AND,
     BITWISE_OR,
-    BITWISE_XOR,
+    BITWISE_XOR, // a ^ b
+    BITWISE_NOT,
 
     // Comparison operators.
     EQ,
@@ -71,10 +75,23 @@ enum class TokenType
     GE,
     GT,
 
-    ASSIGNMENT,
+    // Assignment and its variations.
+    ASSIGNMENT, // a = b.
+    PLUS_EQ, // a += b
+    MINUS_EQ, // a -= b
+    MULT_EQ, // a *= b
+    DIV_EQ, // a /= b
+    MOD_EQ, // a %= b
+    OR_EQ, // a ||= b
+    BITWISE_OR_EQ, // a |= b
+    AND_EQ, // a &&= b
+    BITWISE_AND_EQ, // a &= b
+    BITWISE_XOR_EQ, // a ^= b // TODO
+    BITWISE_NOT_EQ, // a ~= b
 
-    INCREMENT_OPERATOR,
-    DECREMENT_OPERATOR,
+    // Increment and decrement operators.
+    INCREMENT,
+    DECREMENT,
 
     END_OF_FILE,
 

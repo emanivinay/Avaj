@@ -98,6 +98,7 @@ Token Lexer::getNextToken()
         return readIdentifier();
     }
     else if (chrUnit.chr == '>' || chrUnit.chr == '<') {
+        // >, <, >=, <=
         CharUnit newUnit = sourceBuffer.getCharUnit();
         if (newUnit.chr == '=') {
             std::string op(2, '=');
@@ -111,7 +112,51 @@ Token Lexer::getNextToken()
         }
     }
     else if (chrUnit.chr == '!') {
-        return _Token(TokenType::NOT, std::string(1, chrUnit.chr));
+        // Could be '!' or '!='
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            return _Token(TokenType::NE, "!=");
+        }
+        sourceBuffer.pushCharBack(newUnit);
+        return _Token(TokenType::NOT, "!");
+    }
+    else if (chrUnit.chr == '~') {
+        // Could be '~' or '~='
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            return _Token(TokenType::BITWISE_NOT_EQ, "~=");
+        }
+        sourceBuffer.pushCharBack(newUnit);
+        return _Token(TokenType::BITWISE_NOT, "~");
+    }
+    else if (chrUnit.chr == '^') {
+        // ^ or ^=
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            return _Token(TokenType::BITWISE_XOR_EQ, "^=");
+        }
+        sourceBuffer.pushCharBack(newUnit);
+        return _Token(TokenType::BITWISE_XOR, "^");
+    }
+    else if (chrUnit.chr == '%' || chrUnit.chr == '*' || chrUnit.chr == '/') {
+        // *, %, /, *=, %=, /=
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            std::string op(2, '=');
+            op[0] = chrUnit.chr;
+            TokenType type = chrUnit.chr == '%' ? TokenType::MOD_EQ :
+                             chrUnit.chr == '*' ? TokenType::MULT_EQ :
+                             TokenType::DIV_EQ;
+            return _Token(type, op);
+        } else {
+            sourceBuffer.pushCharBack(newUnit);
+            std::string op(1, chrUnit.chr);
+            TokenType type = chrUnit.chr == '%' ? TokenType::MODULO :
+                             chrUnit.chr == '*' ? TokenType::MULTIPLY :
+                             TokenType::DIVIDE;
+
+            return _Token(type, op);
+        }
     }
     else if (chrUnit.chr == '+' || chrUnit.chr == '-') {
         // Could be an operator +, -, +=, -=, ++, --.
@@ -125,33 +170,59 @@ Token Lexer::getNextToken()
         }
         else if (newUnit.chr == chrUnit.chr) {
             if (newUnit.chr == '+')
-                return _Token(TokenType::INCREMENT_OPERATOR, "++");
+                return _Token(TokenType::INCREMENT, "++");
             else
-                return _Token(TokenType::DECREMENT_OPERATOR, "--");
+                return _Token(TokenType::DECREMENT, "--");
         }
         else if (newUnit.chr == '=') {
-            std::string op(2, '=');
-            op[0] = chrUnit.chr;
-            return _Token(TokenType::BINARY_OPERATOR, op);
+            // += or -=
+            if (chrUnit.chr == '+')
+                return _Token(TokenType::PLUS_EQ, "+=");
+            else
+                return _Token(TokenType::MINUS_EQ, "-=");
         }
         else {
             sourceBuffer.pushCharBack(newUnit);
-            return _Token(TokenType::UNARY_OPERATOR,
-                            std::string(1, chrUnit.chr));
+            TokenType type = chrUnit.chr == '+' ? TokenType::PLUS :
+                                    TokenType::MINUS;
+            return _Token(type, std::string(1, chrUnit.chr));
         }
     }
-    else if (chrUnit.chr == '&' || chrUnit.chr == '|') {
+    else if (chrUnit.chr == '&') {
+        // &, &&, &=, &&=
         CharUnit newUnit = sourceBuffer.getCharUnit();
-        TokenType opType = chrUnit.chr == '|' ? TokenType::BITWISE_OR : 
-                                                TokenType::BITWISE_AND;
-        if (newUnit.chr != chrUnit.chr) {
+        if (newUnit.chr == '=') {
+            return _Token(TokenType::BITWISE_AND_EQ, "&=");
+        } else if (newUnit.chr == '&') {
+            CharUnit nxtUnit = sourceBuffer.getCharUnit();
+            if (nxtUnit.chr == '=') {
+                return _Token(TokenType::AND_EQ, "&&=");
+            } else {
+                sourceBuffer.pushCharBack(nxtUnit);
+                return _Token(TokenType::AND, "&&");
+            }
+        } else {
             sourceBuffer.pushCharBack(newUnit);
-            return _Token(opType, std::string(1, chrUnit.chr));
+            return _Token(TokenType::BITWISE_AND, "&");
         }
-
-        opType = chrUnit.chr == '|' ? TokenType::OR: 
-                                      TokenType::AND;
-        return _Token(opType, std::string(2, chrUnit.chr));
+    }
+    else if (chrUnit.chr == '|') {
+        // |, ||, |=, ||=
+        CharUnit newUnit = sourceBuffer.getCharUnit();
+        if (newUnit.chr == '=') {
+            return _Token(TokenType::BITWISE_OR_EQ, "&=");
+        } else if (newUnit.chr == '|') {
+            CharUnit nxtUnit = sourceBuffer.getCharUnit();
+            if (nxtUnit.chr == '=') {
+                return _Token(TokenType::OR_EQ, "||=");
+            } else {
+                sourceBuffer.pushCharBack(nxtUnit);
+                return _Token(TokenType::OR, "||");
+            }
+        } else {
+            sourceBuffer.pushCharBack(newUnit);
+            return _Token(TokenType::BITWISE_OR, "|");
+        }
     }
     // All numerical tokens must start with a digit.
     else if (isdigit(chrUnit.chr)) {
