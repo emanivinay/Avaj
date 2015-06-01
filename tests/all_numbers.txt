@@ -8,6 +8,10 @@
 -123.0E32
 1.34E12
 1.2E-12
+"String literal"
+'c'
+'\n'
+'\t'
 ;;;;;
 
 class Main
@@ -16,7 +20,7 @@ class Main
     {
         int myAns = 42;
         int[] numbers = {1, 2, 3, 4, 5};
-        myObj..myAttr = 23;
+        myObj.myAttr = 23;
         return 0;
     }
 }

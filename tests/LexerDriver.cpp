@@ -20,8 +20,9 @@ int main(int argc, char **argv)
         }
 
         std::cout << (int)tok.type << " " << tok.lexeme << std::endl;
-        } catch (SyntaxError err) {
+        } catch (SyntaxError& err) {
             std::cout << "syntax error thrown" << std::endl;
+            std::cout << err.what() << std::endl;
         }
     }
     std::cout << std::endl;

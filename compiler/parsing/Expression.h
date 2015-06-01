@@ -25,17 +25,42 @@ enum class LiteralType
     CHAR,
     INTEGER,
     FLOATING,
+    INVALID,
 };
+
+/* Return the type of a literal token. */
+static LiteralType getTokenType(const Token& tok)
+{
+    switch (tok.type)
+    {
+        case TokenType::STRING:
+            return LiteralType::STRING;
+        case TokenType::CHAR_LITERAL:
+            return LiteralType::CHAR;
+        case TokenType::INTEGER:
+            return LiteralType::INTEGER;
+        case TokenType::FLOATING:
+            return LiteralType::FLOATING;
+        default:
+            return LiteralType::INVALID;
+    }
+}
 
 /* Literal expression. */
 class Literal: public Expression
 {
 public:
-    Literal(const LiteralType typ, const std::string& lex):
-        type(typ), lexeme(lex) {}
-
     const LiteralType type;
     const std::string lexeme;
+
+    Literal(const Token& tok):
+        type(getTokenType(tok)), lexeme(tok.lexeme)
+    {
+    }
+
+private:
+    Literal(const LiteralType typ, const std::string& lex):
+        type(typ), lexeme(lex) {}
 };
 
 /**
@@ -68,9 +93,6 @@ public:
 
     const std::vector<IDOrMethodCall> members;
 };
-
-/* Read binary operator precedences from a file. */
-std::map<int, std::string> readBinaryOpPrecedence(const std::string& filepath);
 
 /* Parse Avaj Expressions. */
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer);
