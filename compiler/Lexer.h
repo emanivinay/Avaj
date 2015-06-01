@@ -215,6 +215,10 @@ private:
         char prev = endChar;
         while (true) {
             CharUnit unit = sourceBuffer.getCharUnit();
+            if (unit.chr == EOF) {
+                throw SyntaxError(sourceBuffer.line(), 
+                        "Incomplete string literal. Premature end of file.");
+            }
             if (unit.chr == endChar and prev != '/') {
                 // String literal ends.
                 return out.str();

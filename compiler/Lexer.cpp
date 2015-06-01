@@ -22,22 +22,12 @@ Token Lexer::getNextToken()
     else if (chrUnit.chr == '.') {
         // A dot character starts a field member/method reference.
         Token ref = readIdentifier();
-        if (ref.lexeme.empty())
-            return _Token(TokenType::FAILURE, "Invalid field reference");
+        if (ref.lexeme.empty()) {
+            throw SyntaxError(ref.lineNo, 
+                    "Invalid member reference.");
+        }
 
         return _Token(TokenType::FIELD_REF, "." + ref.lexeme);
-    }
-    else if (chrUnit.chr == '[') {
-        return _Token(TokenType::LEFT_SQUARE_BKT, "[");
-    }
-    else if (chrUnit.chr == ']') {
-        return _Token(TokenType::RIGHT_SQUARE_BKT, "]");
-    }
-    else if (chrUnit.chr == '{') {
-        return _Token(TokenType::LEFT_BRACE, "{");
-    }
-    else if (chrUnit.chr == '}') {
-        return _Token(TokenType::RIGHT_BRACE, "}");
     }
     else if (chrUnit.chr == '?') {
         return _Token(TokenType::QUESTION_MARK, "?");
@@ -101,22 +91,6 @@ Token Lexer::getNextToken()
         
         // Ignore this whitespace and return the next token.
         return getNextToken();
-    }
-    else if ('"' == chrUnit.chr) {
-        // Read the whole string literal and return it.
-        std::ostringstream out;
-        while (true) {
-            CharUnit tmp = sourceBuffer.getCharUnit();
-            if (tmp.chr == EOF) {
-                throw SyntaxError(tmp.lineNo, "Incomplete string literal");
-            }
-            else if (tmp.chr == '"') {
-                break;
-            }
-            out << tmp.chr;
-        }
-
-        return _Token(TokenType::STRING_LITERAL, out.str());
     }
     else if (alpha_(chrUnit)) {
         // Read an identifier.
