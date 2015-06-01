@@ -56,7 +56,7 @@ Token Lexer::getNextToken()
         int lineNo = sourceBuffer.line(), columnNo = sourceBuffer.column();
         std::string lexeme = readStringLiteral('\'');
 
-        if (lexeme.size() != 1 and (lexeme.size() == 2 and lexeme[0] != '\\')) {
+        if (lexeme.size() != 1 and (lexeme.size() != 2 or lexeme[0] != '\\')) {
             return _Token(TokenType::FAILURE, "Invalid char literal");
         }
 
@@ -93,7 +93,9 @@ Token Lexer::getNextToken()
 
         CharUnit unit = sourceBuffer.getCharUnit();
         if (unit.chr == '.') {
-            return _Token(TokenType::FAILURE, "A dot cant follow whitespace.");
+            sourceBuffer.pushCharBack(unit);
+            throw SyntaxError(sourceBuffer.line(), 
+                    "Unexpected dot symbol.");
         }
         sourceBuffer.pushCharBack(unit);
         
@@ -151,7 +153,7 @@ Token Lexer::getNextToken()
             if (newUnit.chr == '+')
                 return _Token(TokenType::INCREMENT_OPERATOR, "++");
             else
-                return _Token(TokenType::INCREMENT_OPERATOR, "--");
+                return _Token(TokenType::DECREMENT_OPERATOR, "--");
         }
         else if (newUnit.chr == '=') {
             std::string op(2, '=');
@@ -159,6 +161,7 @@ Token Lexer::getNextToken()
             return _Token(TokenType::BINARY_OPERATOR, op);
         }
         else {
+            sourceBuffer.pushCharBack(newUnit);
             return _Token(TokenType::UNARY_OPERATOR,
                             std::string(1, chrUnit.chr));
         }
@@ -205,18 +208,19 @@ Token Lexer::readNumber()
         if (unit.chr == 'E' || unit.chr == 'e') {
             out << unit.chr;
             out << readSignedDigitString();
-            return _Token(TokenType::NUMBER, out.str());
+            return _Token(TokenType::EXPONENT, out.str());
         } else {
             sourceBuffer.pushCharBack(unit);
-            return _Token(TokenType::NUMBER, out.str());
+            return _Token(TokenType::FLOATING, out.str());
         }
     } else if (unit.chr == 'E' || unit.chr == 'e') {
         out << unit.chr;
-        out << readSignedDigitString();
-        return _Token(TokenType::NUMBER, out.str());
+        std::string exponent = readSignedDigitString();
+        out << exponent;
+        return _Token(TokenType::EXPONENT, out.str());
     } else {
         sourceBuffer.pushCharBack(unit);
-        return _Token(TokenType::NUMBER, out.str());
+        return _Token(TokenType::INTEGER, out.str());
     }
 }
 

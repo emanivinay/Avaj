@@ -43,7 +43,9 @@ enum class TokenType
     FIELD_REF,
 
     // Literal tokens.
-    NUMBER,
+    INTEGER,
+    FLOATING,
+    EXPONENT, // Number in scientific notation.
     STRING_LITERAL,
     CHAR_LITERAL,
 

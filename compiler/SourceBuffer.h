@@ -47,7 +47,10 @@ public:
     /* Push a character back into the buffer, in case of a parse failure.*/
     bool pushCharBack(CharUnit c);
 
+    /* Return the line no. in the source file being currently read.*/
     int line() const {return lineNo;};
+
+    /* Return the column of the current character being read. */
     int column() const 
     {
         if (curReadPos >= numChars)
@@ -81,5 +84,4 @@ private:
     /* Read fresh data from input file and strip the comments. */
     void readIntoBuffer();
 };
-
 #endif
