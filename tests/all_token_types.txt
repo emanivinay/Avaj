@@ -1,0 +1,17 @@
+;
+<
+>
+<=
+&
+&&
+&&=
+&=
+|
+|=
+||
+||=
+[] {}
+123.2
+int bilbosAge = 111;
+"A string"
+'an illegal char literal'
