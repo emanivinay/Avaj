@@ -86,7 +86,7 @@ enum class TokenType
     BITWISE_OR_EQ, // a |= b
     AND_EQ, // a &&= b
     BITWISE_AND_EQ, // a &= b
-    BITWISE_XOR_EQ, // a ^= b // TODO
+    BITWISE_XOR_EQ, // a ^= b 
     BITWISE_NOT_EQ, // a ~= b
 
     // Increment and decrement operators.
