@@ -4,6 +4,7 @@
 # Vim plugin related.
 .ropeproject
 
+compiler/Grammar
 compiler/test_grammar
 
 # Binary and Object file folders.
