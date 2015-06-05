@@ -238,6 +238,18 @@ public:
     }
 };
 
-/* Parse Avaj Expressions. */
+/* Parse Avaj language expressions.*/
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer);
+
+ParseResult<Expression*>* parseExpr(const std::vector<Token>&,
+                                    int a = 0, int b = -1);
+
+bool endsExpr(const Token&);
+
+int getClosingToken(const std::vector<Token>&, int, int);
+
+ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
+        const std::vector<Token>&, int, int);
+
+ParseResult<Expression*> *parseMemberRef(const std::vector<Token>&, int, int&);
 #endif
