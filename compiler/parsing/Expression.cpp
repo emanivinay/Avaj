@@ -45,8 +45,70 @@ ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
                                         const std::vector<Token>& tokens,
                                         int a, int b)
 {
-    return new ParseFail<std::vector<Expression*> >(
-            "parseCommaSeparatedExprs not implemented yet.");
+    if (a >= b) {
+        throw std::logic_error(
+                "Not enough tokens to parse comma separated exprs");
+    }
+
+    if (tokens[a].type != TokenType::LEFT_BRACKET) {
+        throw SyntaxError(tokens[a].lineNo,
+                "Left paren not present when expected");
+    }
+
+    if (tokens[b].type != TokenType::RIGHT_BRACKET) {
+        throw SyntaxError(tokens[b].lineNo,
+                "Right paren not present when expected");
+    }
+
+    std::vector<Expression*> exprs;
+    for (int i = a + 1;i <= b;) {
+
+        if (tokens[i].type == TokenType::RIGHT_BRACKET)
+            break;
+
+        // TODO(Vinay) - Read an expression, followed by either a `,` or `)`
+        int endingToken = -1, depth = 0;
+        for (int j = i;j <= b; ++j) {
+            if (depth == 0 and endsExpr(tokens[j])) {
+                endingToken = j;
+                break;
+            }
+            else if (tokens[j].type == TokenType::LEFT_BRACKET)
+                depth++;
+            else if (tokens[j].type == TokenType::RIGHT_BRACKET)
+                depth--;
+            if (depth < 0) {
+                throw SyntaxError(tokens[j].lineNo,
+                        "Unbalanced parens");
+            }
+        }
+
+        if (endingToken < 0) {
+            throw SyntaxError(tokens[i].lineNo,
+                    "Ill formed sub-expression");
+        }
+
+        ParseResult<Expression*> *subExpr = parseExpr(tokens, i,
+                                                      endingToken - 1);
+        exprs.push_back(subExpr->result());
+        i = endingToken;
+
+        if (tokens[i].type != TokenType::COMMA && tokens[i].type !=
+                TokenType::RIGHT_BRACKET) {
+            throw SyntaxError(tokens[i].lineNo,
+                    "No comma or right paren following a sub-expression.");
+        }
+
+        if (tokens[i].type == TokenType::COMMA)
+            i++;
+    }
+
+    if (exprs.empty()) {
+        throw SyntaxError(tokens[a].lineNo,
+                "Empty pair of parentheses.");
+    }
+
+    return new ParseSuccess<std::vector<Expression*> >(exprs);
 }
 
 /* Read a member reference expression.*/
