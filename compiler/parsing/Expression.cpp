@@ -66,7 +66,6 @@ ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
         if (tokens[i].type == TokenType::RIGHT_BRACKET)
             break;
 
-        // TODO(Vinay) - Read an expression, followed by either a `,` or `)`
         int endingToken = -1, depth = 0;
         for (int j = i;j <= b; ++j) {
             if (depth == 0 and endsExpr(tokens[j])) {
@@ -111,22 +110,75 @@ ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
     return new ParseSuccess<std::vector<Expression*> >(exprs);
 }
 
+/* Parse an IDOrMethodcall or a single level member access. */
+ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>& ts,
+                                                 bool id,
+                                                 int s, int& endingToken)
+{
+    TokenType neededType = id ? TokenType::IDENTIFIER : TokenType::FIELD_REF;
+    if (ts[s].type != neededType) {
+        return new ParseFail<IDOrMethodCall>(
+                "Unexpected token found.");
+    }
+
+    // Strip away the period.
+    const std::string idName = ts[s].lexeme.substr(id ? 0 : 1);
+
+    if (s + 1 < (int)ts.size() and ts[s + 1].type == TokenType::LEFT_BRACKET) {
+        int end = getClosingToken(ts, s + 1, (int)ts.size() - 1);
+        if (end < 0) {
+            throw SyntaxError(ts[s + 1].lineNo,
+                    "Unbalanced parenthesis in an expression.");
+        }
+        
+        ParseResult<std::vector<Expression*> >* exprs = 
+                        parseCommaSeparatedExprs(ts, s + 1, end);
+
+        endingToken = end;
+        return new ParseSuccess<IDOrMethodCall>(
+                IDOrMethodCall(idName, exprs->result()));
+    } else {
+       endingToken = s; 
+       return new ParseSuccess<IDOrMethodCall>(idName);
+    }
+}
+
 /* Read a member reference expression.*/
 ParseResult<Expression*> *parseMemberRef(const std::vector<Token>& tokens,
                                          int s, int& endingToken)
 {
-    return new ParseFail<Expression*>(
-            "parseMemberRef not implemented yet.");
+    std::vector<IDOrMethodCall> refs;
+    endingToken = s;
+    ParseResult<IDOrMethodCall>* t = parseIDOrMethodCall(tokens,
+                                                         true, s,
+                                                         endingToken);
+    refs.push_back(t->result());
+    while (true) {
+        ParseResult<IDOrMethodCall> *acc = parseIDOrMethodCall(tokens, false,
+                                                endingToken + 1, endingToken);
+        if (!acc->isParseSuccessful()) {
+            break;
+        }
+
+        refs.push_back(acc->result());
+    }
+
+    return new ParseSuccess<Expression*>(new MemberAccess(refs));
 }
 
 /**
  * Read enough tokens from the token buffer and construct an expression object.
  * In Avaj language, expressions are always followed by either a semicolon or a
- * comma.
+ * comma or a right paren, plus considering that expressions can be nested, the
+ * range of tokens that form the expression can be isolated.
  *
- * Algorithm to parse Avaj expressions.
+ * ALGORITHM to parse Avaj expressions.
  *
- * 1. Expressions can be nested. 
+ * 1. Isolate the tokens that'll form the expression.
+ * 2. Recursively construct the nested expressions(member refs and
+ * parenthesised sub expressions).
+ * 3. Top level expressions and operators will be present at the top level.
+ * 4. Use operator precedence to form BinaryOp and UnaryOp objects.
  */
 ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
                                     int a, int b)

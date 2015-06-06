@@ -40,7 +40,7 @@ PARSER_DIR := compiler/parsing
 # Group common parser utilities here.
 parser_base: ${PARSER_DIR}/TokenBuffer.h ${PARSER_DIR}/ParserUtils.h ${PARSER_DIR}/ParseResult.h
 
-expression: ${PARSER_DIR}/Expression.cpp
+expression: ${PARSER_DIR}/Expression.h ${PARSER_DIR}/Expression.cpp
 	${CC} -c -o obj/Expression ${PARSER_DIR}/Expression.cpp
 
 statement: ${PARSER_DIR}/Statement.cpp
