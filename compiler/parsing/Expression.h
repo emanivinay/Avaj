@@ -78,9 +78,14 @@ public:
     const std::string varName;
     const std::vector<Expression*> argExprs;
 
-    IDOrMethodCall(bool isMethodCall, const std::string& name,
+    // For a simple identifier/field access.
+    IDOrMethodCall(const std::string& name):
+        isAMethodCall(false), varName(name), argExprs() {}
+
+    // For a method call.
+    IDOrMethodCall(const std::string& name,
                    const std::vector<Expression*>& exprs):
-        isAMethodCall(isMethodCall), varName(name), argExprs(exprs) {}
+        isAMethodCall(true), varName(name), argExprs(exprs) {}
 
     ~IDOrMethodCall()
     {
@@ -250,6 +255,9 @@ int getClosingToken(const std::vector<Token>&, int, int);
 
 ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
         const std::vector<Token>&, int, int);
+
+ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>&,
+                                                 bool id, int, int&);
 
 ParseResult<Expression*> *parseMemberRef(const std::vector<Token>&, int, int&);
 #endif
