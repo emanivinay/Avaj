@@ -183,46 +183,8 @@ enum class BinaryOp
     INVALID,
 };
 
-/* Return the binary operator type of the token. */
-static BinaryOp getBinaryOpType(const Token& tok)
-{
-    switch (tok.type) {
-        case TokenType::PLUS:
-            return BinaryOp::PLUS;
-        case TokenType::MINUS:
-            return BinaryOp::MINUS;
-        case TokenType::MULTIPLY:
-            return BinaryOp::MULTIPLY;
-        case TokenType::DIVIDE:
-            return BinaryOp::DIVIDE;
-        case TokenType::MODULO:
-            return BinaryOp::MODULO;
-        case TokenType::GT:
-            return BinaryOp::GT;
-        case TokenType::LT:
-            return BinaryOp::LT;
-        case TokenType::EQ:
-            return BinaryOp::EQ;
-        case TokenType::GE:
-            return BinaryOp::GE;
-        case TokenType::LE:
-            return BinaryOp::LE;
-        case TokenType::NE:
-            return BinaryOp::NE;
-        case TokenType::AND:
-            return BinaryOp::AND;
-        case TokenType::OR:
-            return BinaryOp::OR;
-        case TokenType::BITWISE_AND:
-            return BinaryOp::BITWISE_AND;
-        case TokenType::BITWISE_OR:
-            return BinaryOp::BITWISE_OR;
-        case TokenType::BITWISE_XOR:
-            return BinaryOp::BITWISE_XOR;
-        default:
-            return BinaryOp::INVALID;
-    }
-}
+/* Return the binary operator type of this token. */
+BinaryOp getBinaryOpType(const Token&);
 
 /* Expressions of type E1 op E2, where op is a binary operator. */
 class BinaryExpression: public Expression
@@ -262,21 +224,8 @@ enum class UnaryOp
     INVALID,
 };
 
-static UnaryOp getUnaryOpType(const Token& tok)
-{
-    switch (tok.type) {
-        case TokenType::PLUS:
-            return UnaryOp::PLUS;
-        case TokenType::MINUS:
-            return UnaryOp::MINUS;
-        case TokenType::NOT:
-            return UnaryOp::NOT;
-        case TokenType::BITWISE_NOT:
-            return UnaryOp::BITWISE_NOT;
-        default:
-            return UnaryOp::INVALID;
-    }
-}
+/* Return the unary operator type of this token. */
+UnaryOp getUnaryOpType(const Token&);
 
 /**
  * Expressions of the form `uop E` where uop is a unary operator and E is an

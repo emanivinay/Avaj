@@ -12,6 +12,64 @@ std::map<std::string, int> binaryOpPrecTable {
         {"*", 3}, {"/", 3}, {"%", 3},
 };
 
+/* Return the binary operator type of the token. */
+BinaryOp getBinaryOpType(const Token& tok)
+{
+    switch (tok.type) {
+        case TokenType::PLUS:
+            return BinaryOp::PLUS;
+        case TokenType::MINUS:
+            return BinaryOp::MINUS;
+        case TokenType::MULTIPLY:
+            return BinaryOp::MULTIPLY;
+        case TokenType::DIVIDE:
+            return BinaryOp::DIVIDE;
+        case TokenType::MODULO:
+            return BinaryOp::MODULO;
+        case TokenType::GT:
+            return BinaryOp::GT;
+        case TokenType::LT:
+            return BinaryOp::LT;
+        case TokenType::EQ:
+            return BinaryOp::EQ;
+        case TokenType::GE:
+            return BinaryOp::GE;
+        case TokenType::LE:
+            return BinaryOp::LE;
+        case TokenType::NE:
+            return BinaryOp::NE;
+        case TokenType::AND:
+            return BinaryOp::AND;
+        case TokenType::OR:
+            return BinaryOp::OR;
+        case TokenType::BITWISE_AND:
+            return BinaryOp::BITWISE_AND;
+        case TokenType::BITWISE_OR:
+            return BinaryOp::BITWISE_OR;
+        case TokenType::BITWISE_XOR:
+            return BinaryOp::BITWISE_XOR;
+        default:
+            return BinaryOp::INVALID;
+    }
+}
+
+/* Get the unary operator type of the token. */
+UnaryOp getUnaryOpType(const Token& tok)
+{
+    switch (tok.type) {
+        case TokenType::PLUS:
+            return UnaryOp::PLUS;
+        case TokenType::MINUS:
+            return UnaryOp::MINUS;
+        case TokenType::NOT:
+            return UnaryOp::NOT;
+        case TokenType::BITWISE_NOT:
+            return UnaryOp::BITWISE_NOT;
+        default:
+            return UnaryOp::INVALID;
+    }
+}
+
 /* Return the precedence of a binary operator.*/
 int getBinaryOpPrec(const std::string& op)
 {
