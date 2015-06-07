@@ -14,6 +14,9 @@ class Expression
 {
 public:
     virtual ~Expression() = 0;
+
+    /* String representation of this expression. */
+    virtual std::string repr() const = 0;
 };
 
 /* Several varieties of expressions follow. */
@@ -61,6 +64,14 @@ public:
     {
     }
 
+    std::string repr() const
+    {
+        std::ostringstream out;
+        out << "Literal(type=" << (int)type << ", lexeme=" << lexeme;
+        out << ")";
+        return out.str();
+    }
+
 private:
     Literal(const LiteralType typ, const std::string& lex):
         type(typ), lexeme(lex) {}
@@ -87,6 +98,20 @@ public:
                    const std::vector<Expression*>& exprs):
         isAMethodCall(true), varName(name), argExprs(exprs) {}
 
+    /* String representation of this object.*/
+    std::string repr() const
+    {
+        std::stringstream out;
+        out << "IDOrMethodCall(varName=" << varName << ", isAMethodCall=";
+        out << (isAMethodCall ? "true" : "false");
+        out << ", argExprs=";
+        out << "(";
+        for (auto exprPtr: argExprs)
+            out << exprPtr->repr() << ", ";
+        out << "))";
+        return out.str();
+    }
+
     ~IDOrMethodCall()
     {
         for (auto expr: argExprs) {
@@ -107,6 +132,17 @@ public:
 
     MemberAccess(const std::vector<IDOrMethodCall>& mbrs):
         members(mbrs) {}
+
+    /* String representation of this object. */
+    std::string repr() const
+    {
+        std::ostringstream out;
+        out << "MemberAccess(";
+        for (auto& m : members)
+            out << m.repr() << ", ";
+        out << ")";
+        return out.str();
+    }
 
     ~MemberAccess() {}
 };
@@ -191,6 +227,16 @@ public:
     BinaryExpression(Expression* const lft, Expression* const rgt,
             const BinaryOp _op): leftExpr(lft), rightExpr(rgt), op(_op) {}
 
+    /* String representation of this object. */
+    std::string repr() const
+    {
+        std::ostringstream out;
+        out << "BinaryExpression(op=" << (int)op << ", ";
+        out << leftExpr->repr() << ", ";
+        out << rightExpr->repr() << ")";
+        return out.str();
+    }
+
     ~BinaryExpression()
     {
         delete leftExpr;
@@ -236,6 +282,15 @@ public:
 
     UnaryOpExpr(const UnaryOp _op, Expression* const _expr):
         op(_op), expr(_expr) {}
+
+    /* String representation of this object.*/
+    std::string repr() const
+    {
+        std::ostringstream out;
+        out << "UnaryOpExpr(op=" << (int)op << ", ";
+        out << expr->repr() << ")";
+        return out.str();
+    }
 
     ~UnaryOpExpr()
     {
