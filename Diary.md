@@ -65,3 +65,7 @@ Signing off for today.
 *   Expressions are the at the core of the language, syntactically and
 semantically. Every othe syntactic unit is defined in terms of expressions, and
 expressions are defined only in terms of themselves.
+
+### 06/07/15
+
+*  At this point, I'd like to start designing a VM for Avaj language.
