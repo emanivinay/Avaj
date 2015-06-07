@@ -10,6 +10,12 @@ std::map<std::string, int> binaryOpPrecTable {
         {"*", 3}, {"/", 3}, {"%", 3},
 };
 
+/* Return the precedence of a binary operator.*/
+int getBinaryOpPrec(const std::string& op)
+{
+    return binaryOpPrecTable[op];
+}
+
 /* Does this token mark the end of an expression? */
 bool endsExpr(const Token& tok)
 {
@@ -38,6 +44,50 @@ int getClosingToken(const std::vector<Token>& tokens, int s, int e)
     }
 
     return -1;
+}
+
+/* Combine an unary operator and an expression into an UnaryExpr object. */
+Expression *combine(const std::vector<Token>& opers, Expression *e,
+                    bool isFirst)
+{
+    if (isFirst) {
+        if (opers.empty())
+            return e;
+
+        if (opers.size() > 1) {
+            throw SyntaxError(opers[0].lineNo,
+                    "Too many unary operators precede an expression.");
+        }
+        else {
+            if (getUnaryOpType(opers[0]) == UnaryOp::INVALID) {
+                throw SyntaxError(opers[0].lineNo,
+                        "Invalid unary operator before an expression.");
+            }
+
+            return new UnaryOpExpr(getUnaryOpType(opers[0]), e);
+        }
+    }
+
+    if (opers.size() > 2) {
+        throw SyntaxError(opers[0].lineNo,
+                "Too many unary operators precede an expression.");
+    }
+
+    if (getBinaryOpType(opers[0]) == BinaryOp::INVALID) {
+        throw SyntaxError(opers[0].lineNo,
+                "Expected binary operator not found.");
+    }
+
+    if (opers.size() == 2) {
+        if (getUnaryOpType(opers[1]) == UnaryOp::INVALID) {
+            throw SyntaxError(opers[1].lineNo,
+                "Invalid unary operator before an expression.");
+        }
+
+        e = new UnaryOpExpr(getUnaryOpType(opers[1]), e);
+    }
+
+    return e;
 }
 
 /* Read a list of comma separated expressions enclosed in parens. */
@@ -166,6 +216,62 @@ ParseResult<Expression*> *parseMemberRef(const std::vector<Token>& tokens,
     return new ParseSuccess<Expression*>(new MemberAccess(refs));
 }
 
+/* Top down recursive algorithm for operator precedence parsing.*/
+ParseResult<Expression*> *topDownPrecedence(const std::vector<Expression*>& exprs,
+                                            const std::vector<Token>& bOps,
+                                            int start, int end)
+{
+    if (start > end) {
+        throw std::logic_error("Empty range for topDownPrecedence");
+    }
+    else if (start == end) {
+        return new ParseSuccess<Expression*>(exprs[start]);
+    }
+
+    int minPrec = 100;
+    std::vector<int> minPrecIndices;
+
+    for (int i = start;i < end; ++i) {
+        int curPrec = getBinaryOpPrec(bOps[i].lexeme);
+        if (curPrec < minPrec) {
+            minPrec = curPrec;
+            minPrecIndices.clear();
+        }
+
+        if (curPrec == minPrec)
+            minPrecIndices.push_back(i);
+    }
+
+    if (minPrec == 100) {
+        throw std::logic_error("Illogical code in Expression.cpp");
+    }
+
+    std::vector<Expression*> topLevelSubExprs;
+    for (int i = 0;i < (int)minPrecIndices.size(); ++i) {
+        int curStart = i == 0 ? start : (1 + minPrecIndices[i - 1]);
+        int curEnd = minPrecIndices[i];
+
+        ParseResult<Expression*> *subExpr = topDownPrecedence(exprs, bOps,
+                                                              curStart,
+                                                              curEnd);
+        topLevelSubExprs.push_back(subExpr->result());
+    }
+
+    ParseResult<Expression*> *lastSubExpr = topDownPrecedence(exprs, bOps,
+                                                    1 + minPrecIndices.back(),
+                                                    end);
+    topLevelSubExprs.push_back(lastSubExpr->result());
+
+    Expression* finalResult = topLevelSubExprs[0];
+    for (int i = 1;i < (int)topLevelSubExprs.size();i++) {
+        int operIndex = minPrecIndices[i - 1];
+        finalResult = new BinaryExpression(finalResult, topLevelSubExprs[i],
+                                           getBinaryOpType(bOps[operIndex]));
+    }
+
+    return new ParseSuccess<Expression*>(finalResult);
+}
+
 /**
  * Read enough tokens from the token buffer and construct an expression object.
  * In Avaj language, expressions are always followed by either a semicolon or a
@@ -249,10 +355,15 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
                 "Ill formed expression");
     }
 
-    // TODO(Vinay) -> Check the unary/binary validity of operators and 
-    // form the final expression.
-    return new ParseFail<Expression*>(
-            "Final expression building not implemented yet.");
+    std::vector<Token> middleOps;
+    for (int i = 0;i < (int)operators.size(); ++i) {
+        topLevelExprs[i] = combine(operators[i], topLevelExprs[i]);
+        if (i >= 1)
+            middleOps.push_back(operators[i][0]);
+    }
+
+    return topDownPrecedence(topLevelExprs, middleOps, 0,
+                             (int)topLevelExprs.size() - 1);
 }
 
 // Isolate the expression tokens and pass them to the fnction above.

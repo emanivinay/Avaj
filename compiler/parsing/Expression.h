@@ -249,9 +249,18 @@ ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer);
 ParseResult<Expression*>* parseExpr(const std::vector<Token>&,
                                     int a = 0, int b = -1);
 
+int getBinaryOpPrec(const std::string& op);
+
 bool endsExpr(const Token&);
 
 int getClosingToken(const std::vector<Token>&, int, int);
+
+Expression *combine(const std::vector<Token>& opers, Expression *e,
+                    bool isFirstExpr = false);
+
+ParseResult<Expression*> *topDownPrecedence(const std::vector<Expression*>&,
+                                            const std::vector<Token>&,
+                                            int start, int end);
 
 ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
         const std::vector<Token>&, int, int);
