@@ -1,5 +1,7 @@
 #include "Expression.h"
 
+#define LOG_MSG(fmtString, ...) printf(fmtString, ##__VA_ARGS__)
+
 Expression::~Expression() {}
 
 /* Binary operator precedence table. */
@@ -152,22 +154,17 @@ ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
             i++;
     }
 
-    if (exprs.empty()) {
-        throw SyntaxError(tokens[a].lineNo,
-                "Empty pair of parentheses.");
-    }
-
     return new ParseSuccess<std::vector<Expression*> >(exprs);
 }
 
 /* Parse an IDOrMethodcall or a single level member access. */
-ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>& ts,
+ParseResult<IDOrMethodCall*> *parseIDOrMethodCall(const std::vector<Token>& ts,
                                                  bool id,
                                                  int s, int& endingToken)
 {
     TokenType neededType = id ? TokenType::IDENTIFIER : TokenType::FIELD_REF;
     if (ts[s].type != neededType) {
-        return new ParseFail<IDOrMethodCall>(
+        return new ParseFail<IDOrMethodCall*>(
                 "Unexpected token found.");
     }
 
@@ -175,6 +172,7 @@ ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>& ts,
     const std::string idName = ts[s].lexeme.substr(id ? 0 : 1);
 
     if (s + 1 < (int)ts.size() and ts[s + 1].type == TokenType::LEFT_BRACKET) {
+        LOG_MSG("%s\n", "left paren found, method call");
         int end = getClosingToken(ts, s + 1, (int)ts.size() - 1);
         if (end < 0) {
             throw SyntaxError(ts[s + 1].lineNo,
@@ -185,11 +183,11 @@ ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>& ts,
                         parseCommaSeparatedExprs(ts, s + 1, end);
 
         endingToken = end;
-        return new ParseSuccess<IDOrMethodCall>(
-                IDOrMethodCall(idName, exprs->result()));
+        return new ParseSuccess<IDOrMethodCall*>(
+                new IDOrMethodCall(idName, exprs->result()));
     } else {
        endingToken = s; 
-       return new ParseSuccess<IDOrMethodCall>(idName);
+       return new ParseSuccess<IDOrMethodCall*>(new IDOrMethodCall(idName));
     }
 }
 
@@ -197,14 +195,14 @@ ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>& ts,
 ParseResult<Expression*> *parseMemberRef(const std::vector<Token>& tokens,
                                          int s, int& endingToken)
 {
-    std::vector<IDOrMethodCall> refs;
+    std::vector<IDOrMethodCall*> refs;
     endingToken = s;
-    ParseResult<IDOrMethodCall>* t = parseIDOrMethodCall(tokens,
+    ParseResult<IDOrMethodCall*>* t = parseIDOrMethodCall(tokens,
                                                          true, s,
                                                          endingToken);
     refs.push_back(t->result());
     while (true) {
-        ParseResult<IDOrMethodCall> *acc = parseIDOrMethodCall(tokens, false,
+        ParseResult<IDOrMethodCall*> *acc = parseIDOrMethodCall(tokens, false,
                                                 endingToken + 1, endingToken);
         if (!acc->isParseSuccessful()) {
             break;
@@ -289,8 +287,14 @@ ParseResult<Expression*> *topDownPrecedence(const std::vector<Expression*>& expr
 ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
                                     int a, int b)
 {
-    if (b < 0)
+    LOG_MSG("%s %d %d\n", "Entering parseExpr(tokens)", a, b);
+    if (b < 0) {
+        LOG_MSG("%s\n", "First parseExpr(tokens) call");
+        for (auto& t : tokens) {
+            LOG_MSG("Token is %s\n", t.lexeme.c_str());
+        }
         b = (int)tokens.size() - 1;
+    }
 
     if (b < a) {
         throw SyntaxError(tokens[a].lineNo, 
@@ -322,8 +326,10 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
         else if (tok.type == TokenType::IDENTIFIER) {
             // Read a member ref.
             int endingToken = i;
+            LOG_MSG("%s\n", "before parseMemberRef call");
             ParseResult<Expression*> *memberRef = 
                             parseMemberRef(tokens, i, endingToken);
+            LOG_MSG("Address of returned memberRef is %p\n", memberRef);
             topLevelExprs.push_back(memberRef->result());
             i = endingToken;
         }
@@ -362,6 +368,7 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
             middleOps.push_back(operators[i][0]);
     }
 
+    LOG_MSG("%s %d %d\n", "Leaving parseExpr(tokens)", a, b);
     return topDownPrecedence(topLevelExprs, middleOps, 0,
                              (int)topLevelExprs.size() - 1);
 }
@@ -369,6 +376,7 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
 // Isolate the expression tokens and pass them to the fnction above.
 ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer)
 {
+    LOG_MSG("%s\n", "Entering parseExpr(tokenBuffer)");
     std::vector<Token> exprTokens;
     int depth = 0;
 
@@ -400,5 +408,6 @@ ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer)
         }
     }
 
+    LOG_MSG("%s\n", "Leaving parseExpr(tokenBuffer)");
     return parseExpr(exprTokens);
 }

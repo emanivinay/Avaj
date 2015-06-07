@@ -9,6 +9,9 @@
  * 1 + 2 evaluates to 3, while the expr. "asd" evaluates to a string. Expressions
  * may also be used to refer to existing values. e.g. myObj.a refers to a field
  * named a within the value myObj.
+ *
+ * Expression objects must never be created on stack or be a data member of
+ * another object,  as that may lead to double deletion.
  */
 class Expression
 {
@@ -87,12 +90,12 @@ class IDOrMethodCall
 public:
     const bool isAMethodCall;
     const std::string varName;
-    const std::vector<Expression*> argExprs;
+    std::vector<Expression*> argExprs;
 
     // For a simple identifier/field access.
     IDOrMethodCall(const std::string& name):
         isAMethodCall(false), varName(name), argExprs() {}
-
+    
     // For a method call.
     IDOrMethodCall(const std::string& name,
                    const std::vector<Expression*>& exprs):
@@ -128,9 +131,9 @@ public:
 class MemberAccess: public Expression
 {
 public:
-    const std::vector<IDOrMethodCall> members;
+    const std::vector<IDOrMethodCall*> members;
 
-    MemberAccess(const std::vector<IDOrMethodCall>& mbrs):
+    MemberAccess(const std::vector<IDOrMethodCall*>& mbrs):
         members(mbrs) {}
 
     /* String representation of this object. */
@@ -139,12 +142,17 @@ public:
         std::ostringstream out;
         out << "MemberAccess(";
         for (auto& m : members)
-            out << m.repr() << ", ";
+            out << m->repr() << ", ";
         out << ")";
         return out.str();
     }
 
-    ~MemberAccess() {}
+    ~MemberAccess()
+    {
+        for (auto mPtr: members) {
+            delete mPtr;
+        }
+    }
 };
 
 /* Binary operators in the Avaj language. */
@@ -320,7 +328,7 @@ ParseResult<Expression*> *topDownPrecedence(const std::vector<Expression*>&,
 ParseResult<std::vector<Expression*> > *parseCommaSeparatedExprs(
         const std::vector<Token>&, int, int);
 
-ParseResult<IDOrMethodCall> *parseIDOrMethodCall(const std::vector<Token>&,
+ParseResult<IDOrMethodCall*> *parseIDOrMethodCall(const std::vector<Token>&,
                                                  bool id, int, int&);
 
 ParseResult<Expression*> *parseMemberRef(const std::vector<Token>&, int, int&);

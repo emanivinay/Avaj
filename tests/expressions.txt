@@ -3,3 +3,5 @@
 3 + 4;
 a + b * c;
 (a + b) * c - d;
+solveForX(1, 2, 3);
+mySelf.solveForY();
