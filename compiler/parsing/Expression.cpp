@@ -357,7 +357,7 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
 
     std::vector<Token> middleOps;
     for (int i = 0;i < (int)operators.size(); ++i) {
-        topLevelExprs[i] = combine(operators[i], topLevelExprs[i]);
+        topLevelExprs[i] = combine(operators[i], topLevelExprs[i], i == 0);
         if (i >= 1)
             middleOps.push_back(operators[i][0]);
     }
@@ -382,6 +382,13 @@ ParseResult<Expression*>* parseExpr(TokenBuffer& tokenBuffer)
             tokenBuffer.putTokenBack(tok);
             break;
         }
+        else if (tok.type == TokenType::SEMI_COLON) {
+            // Semi colon is never part of an expression. This is an ill-formed
+            // expression.
+            throw SyntaxError(tok.lineNo,
+                    "Unexpected semi-colon before ending the expression.");
+        }
+
         exprTokens.push_back(tok);
         if (tok.type == TokenType::LEFT_BRACKET)
             depth++;
