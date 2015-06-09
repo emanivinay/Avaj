@@ -68,4 +68,14 @@ expressions are defined only in terms of themselves.
 
 ### 06/07/15
 
-*  At this point, I'd like to start designing a VM for Avaj language.
+*   At this point, I'd like to start designing a VM for Avaj language.
+
+### 06/09/15
+
+*   I think the best course for me is to write the compiler for a good vm. VM design
+and implementation, as it turns out is hard and time consuming. At this point, If I
+started on VM design, Avaj compiler would stall indefinitely and eventually I'd lose
+interest in it.
+
+*   So, the next task is to finish the parser module and then start sketching out the
+semantics of the language.
