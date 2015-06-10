@@ -39,6 +39,8 @@ public:
             delete stmtPtr;
         }
     }
+
+    static ParseResult<StatementBlock*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -60,6 +62,8 @@ public:
     {
         delete valueExpr;
     }
+
+    static ParseResult<Assignment*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 class VarDecl: public Statement
@@ -70,6 +74,8 @@ public:
 
     VarDecl(const std::string& type, const std::string& name):
         typeName(type), varName(name) {}
+
+    static ParseResult<VarDecl*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /* If statement is a sequence of condition, statement_block pairs.*/
@@ -99,6 +105,8 @@ public:
             delete clause;
         }
     }
+
+    static ParseResult<IfStmt*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -124,6 +132,8 @@ public:
         delete iterateStmt;
         delete body;
     }
+
+    static ParseResult<ForStmt*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
