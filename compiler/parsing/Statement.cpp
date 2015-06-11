@@ -3,15 +3,25 @@
 // Define the destructor.
 Statement::~Statement() {}
 
-ParseResult<Statement*>* Statement::tryParse(TokenBuffer& tokenBuffer)
-{
-    return parseStmt(tokenBuffer);
-}
-
 ParseResult<StatementBlock*> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
 {
-    return new ParseFail<StatementBlock*>(
-            "StatementBlock::tryParse not implemented yet.");
+    if (!tokenBuffer.readLexemes({"{"})) {
+        // Not a statement block;
+        return new ParseFail<StatementBlock*>(
+                "Curly brace expected, but found");
+    }
+
+    std::vector<Statement*> blockStmts;
+    while (true) {
+        if (tokenBuffer.readLexemes({"}"})) {
+            break;
+        }
+
+        auto stmt = parseStmt(tokenBuffer);
+        blockStmts.push_back(stmt->result());
+    }
+
+    return new ParseSuccess<StatementBlock*>(new StatementBlock(blockStmts));
 }
 
 ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
@@ -93,6 +103,6 @@ ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
     }
     delete assignStmt;
 
-    return new ParseFail<Statement*>(
-            "No statement found here.");
+    throw SyntaxError(tokenBuffer.line(),
+                      "Statement expected, not found");
 }

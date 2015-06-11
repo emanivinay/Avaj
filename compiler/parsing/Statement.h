@@ -14,8 +14,6 @@ class Statement
 {
 public:
     virtual ~Statement() = 0;
-
-    static ParseResult<Statement*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /* Definitions for different types of statements follow. */
