@@ -3,6 +3,9 @@
 // Define the destructor.
 Statement::~Statement() {}
 
+// Initialize the empty statement singleton to null.
+EmptyStatement *EmptyStatement::emptyStmt = nullptr;
+
 ParseResult<StatementBlock*> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
 {
     if (!tokenBuffer.readLexemes({"{"})) {
@@ -16,18 +19,43 @@ ParseResult<StatementBlock*> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
         if (tokenBuffer.readLexemes({"}"})) {
             break;
         }
-
         auto stmt = parseStmt(tokenBuffer);
         blockStmts.push_back(stmt->result());
     }
-
     return new ParseSuccess<StatementBlock*>(new StatementBlock(blockStmts));
 }
 
 ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
 {
-    return new ParseFail<IfStmt*>(
-            "IfStmt::tryParse not implemented yet.");
+    int startState = tokenBuffer.getCurrentState();
+
+    // `if` `(` expression `)` stmt (`else` `if` `(` expr `)` stmt)* (`else`
+    // stmt)?
+    if (!tokenBuffer.readLexemes({"if", "("})) {
+        return new ParseFail<IfStmt*>(
+                "If keyword and left paren expected, missing.");
+    }
+    // If and ( found, if statement must follow.
+    ParseResult<Expression*> *testExpr = parseExpr(tokenBuffer);
+    if (!tokenBuffer.readLexemes({")"})) {
+        throw SyntaxError(tokenBuffer.line(),
+                "Closing paren not found after first condition expression.");
+    }
+
+    // Read a statement.
+    ParseResult<Statement*> *consequent = parseStmt(tokenBuffer);
+
+    // Read else if clauses.
+    while (true) {
+        if (tokenBuffer.readLexemes({"else", "if"})) {
+            // else if block starts.
+        } else {
+            break;
+        }
+    }
+
+    // Read the final else clause, if exists.
+    return new ParseFail<IfStmt*>("IfStmt::tryParse not implemented yet.");
 }
 
 ParseResult<ForStmt*> *ForStmt::tryParse(TokenBuffer& tokenBuffer)
@@ -48,6 +76,15 @@ ParseResult<Assignment*> *Assignment::tryParse(TokenBuffer& tokenBuffer)
             "Assignment::tryParse not implemented yet.");
 }
 
+#define tryAndReturn(STMT_TYPE, stmtObj) ParseResult<STMT_TYPE*> *stmtObj\
+        = STMT_TYPE::tryParse(tokenBuffer);\
+        if (stmtObj->isParseSuccessful()) {\
+            auto ret = new ParseSuccess<Statement*>(stmtObj->result());\
+            delete stmtObj;\
+            return ret;\
+        }\
+        delete stmtObj;
+    
 /**
  * If, for and while statements can be parsed by looking one token ahead.
  * Statement blocks are enclosed in curly braces and thus only need one token
@@ -57,52 +94,12 @@ ParseResult<Assignment*> *Assignment::tryParse(TokenBuffer& tokenBuffer)
  */
 ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
 {
-    ParseResult<StatementBlock*> *blockStmt = StatementBlock::tryParse(
-                                                    tokenBuffer);
-
-    if (blockStmt->isParseSuccessful()) {
-        auto ret = new ParseSuccess<Statement*>(blockStmt->result());
-        delete blockStmt;
-        return ret;
-    }
-    delete blockStmt;
-
-    ParseResult<IfStmt*> *ifStmt = IfStmt::tryParse(tokenBuffer);
-
-    if (ifStmt->isParseSuccessful()) {
-        auto ret = new ParseSuccess<Statement*>(ifStmt->result());
-        delete ifStmt;
-        return ret;
-    }
-    delete ifStmt;
-
-    ParseResult<ForStmt*> *forStmt = ForStmt::tryParse(tokenBuffer);
-
-    if (forStmt->isParseSuccessful()) {
-        auto ret = new ParseSuccess<Statement*>(forStmt->result());
-        delete forStmt;
-        return ret;
-    }
-    delete forStmt;
-
-    ParseResult<VarDecl*> *declStmt = VarDecl::tryParse(tokenBuffer);
-
-    if (declStmt->isParseSuccessful()) {
-        auto ret = new ParseSuccess<Statement*>(declStmt->result());
-        delete declStmt;
-        return ret;
-    }
-    delete declStmt;
-
-    ParseResult<Assignment*> *assignStmt = Assignment::tryParse(tokenBuffer);
-
-    if (assignStmt->isParseSuccessful()) {
-        auto ret = new ParseSuccess<Statement*>(assignStmt->result());
-        delete assignStmt;
-        return ret;
-    }
-    delete assignStmt;
-
+    
+    tryAndReturn(StatementBlock, blockStmt);
+    tryAndReturn(IfStmt, ifStmt);
+    tryAndReturn(ForStmt, forStmt);
+    tryAndReturn(VarDecl, varDecl);
+    tryAndReturn(Assignment, assignStmt);
     throw SyntaxError(tokenBuffer.line(),
                       "Statement expected, not found");
 }

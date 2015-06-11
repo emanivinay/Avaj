@@ -19,6 +19,56 @@ public:
 /* Definitions for different types of statements follow. */
 
 // Statement blocks, if/for/while statements, assignments, var declarations 
+// Simple statements like expr `;` are valid statements. Empty statements are
+// also valid.
+
+/* Empty statements are simply extraneous semi-colons.*/
+class EmptyStatement: public Statement
+{
+public:
+    static ParseResult<EmptyStatement*> *tryParse(TokenBuffer& tokenBuffer)
+    {
+        if (tokenBuffer.readLexemes({";"})) {
+            return new ParseSuccess<EmptyStatement*>(emptyStatement());
+        }
+
+        return new ParseFail<EmptyStatement*>(
+                "Semi-colon expected, but not found.");
+    }
+
+    static EmptyStatement *emptyStatement()
+    {
+        if (emptyStmt == nullptr) {
+            emptyStmt = new EmptyStatement();
+        }
+
+        return emptyStmt;
+    }
+
+private:
+    static EmptyStatement *emptyStmt;
+
+    EmptyStatement() {}
+    ~EmptyStatement() {}
+};
+
+/**
+ * Statements of the form expr `;` are valid and simply evaluate the
+ * expression.
+ */
+class ExprStatement: public Statement
+{
+public:
+    Expression* const expr;
+    
+    ExprStatement(Expression* e):
+        expr(e) {}
+
+    ~ExprStatement()
+    {
+        delete expr;
+    }
+};
 
 /**
  * A block of code, enclosed in curly braces. Introduces a new scope.
