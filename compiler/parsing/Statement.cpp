@@ -3,8 +3,15 @@
 // Define the destructor.
 Statement::~Statement() {}
 
-// Initialize the empty statement singleton to null.
-EmptyStatement *EmptyStatement::emptyStmt = nullptr;
+ParseResult<EmptyStatement*> *EmptyStatement::tryParse(TokenBuffer& tokenBuffer)
+{
+    if (tokenBuffer.readLexemes({";"})) {
+        return new ParseSuccess<EmptyStatement*>(new EmptyStatement());
+    }
+
+    return new ParseFail<EmptyStatement*>(
+            "Semi colon expected, but not found");
+}
 
 ParseResult<StatementBlock*> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
 {
@@ -27,35 +34,34 @@ ParseResult<StatementBlock*> *StatementBlock::tryParse(TokenBuffer& tokenBuffer)
 
 ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
 {
-    int startState = tokenBuffer.getCurrentState();
-
-    // `if` `(` expression `)` stmt (`else` `if` `(` expr `)` stmt)* (`else`
-    // stmt)?
+    // `if` `(` expr `)` (`else` stmt)?
     if (!tokenBuffer.readLexemes({"if", "("})) {
         return new ParseFail<IfStmt*>(
-                "If keyword and left paren expected, missing.");
+                "if keyword and left paren expected, not found.");
     }
-    // If and ( found, if statement must follow.
-    ParseResult<Expression*> *testExpr = parseExpr(tokenBuffer);
-    if (!tokenBuffer.readLexemes({")"})) {
+
+    ParseResult<Expression*> *condition = parseExpr(tokenBuffer);
+    if (!condition->isParseSuccessful()) {
         throw SyntaxError(tokenBuffer.line(),
-                "Closing paren not found after first condition expression.");
+                "Failed reading a condition expression.");
     }
 
-    // Read a statement.
     ParseResult<Statement*> *consequent = parseStmt(tokenBuffer);
-
-    // Read else if clauses.
-    while (true) {
-        if (tokenBuffer.readLexemes({"else", "if"})) {
-            // else if block starts.
-        } else {
-            break;
-        }
+    if (!consequent->isParseSuccessful()) {
+        throw SyntaxError(tokenBuffer.line(),
+                "Failed reading the statement.");
     }
 
-    // Read the final else clause, if exists.
-    return new ParseFail<IfStmt*>("IfStmt::tryParse not implemented yet.");
+    ParseResult<Statement*> *alt;
+    if (tokenBuffer.readLexemes({"else"})) {
+        alt = parseStmt(tokenBuffer);
+    } else {
+        alt = new ParseSuccess<Statement*>(new EmptyStatement());
+    }
+
+    return new ParseSuccess<IfStmt*>(new IfStmt(condition->result(),
+                                                consequent->result(),
+                                                alt->result()));
 }
 
 ParseResult<ForStmt*> *ForStmt::tryParse(TokenBuffer& tokenBuffer)
@@ -95,6 +101,10 @@ ParseResult<Assignment*> *Assignment::tryParse(TokenBuffer& tokenBuffer)
 ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
 {
     
+    tryAndReturn(EmptyStatement, emptyStmt);
+    tryAndReturn(ContinueStmt, continueStmt);
+    tryAndReturn(BreakStmt, breakStmt);
+
     tryAndReturn(StatementBlock, blockStmt);
     tryAndReturn(IfStmt, ifStmt);
     tryAndReturn(ForStmt, forStmt);

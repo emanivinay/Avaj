@@ -19,37 +19,45 @@ public:
 /* Definitions for different types of statements follow. */
 
 // Statement blocks, if/for/while statements, assignments, var declarations 
-// Simple statements like expr `;` are valid statements. Empty statements are
-// also valid.
+// Simple statements like expr `;` are also valid statements. Continue/break
+// are also supported. Empty statements are also provided.
 
 /* Empty statements are simply extraneous semi-colons.*/
 class EmptyStatement: public Statement
 {
 public:
-    static ParseResult<EmptyStatement*> *tryParse(TokenBuffer& tokenBuffer)
+    static ParseResult<EmptyStatement*> *tryParse(TokenBuffer& tokenBuffer);
+};
+
+/* A continue statement. Is only valid inside a loop body.*/
+class ContinueStmt: public Statement
+{
+public:
+    static ParseResult<ContinueStmt*> *tryParse(TokenBuffer& tokenBuffer)
     {
-        if (tokenBuffer.readLexemes({";"})) {
-            return new ParseSuccess<EmptyStatement*>(emptyStatement());
+        if (tokenBuffer.readLexemes({"continue", ";"})) {
+            return new ParseSuccess<ContinueStmt*>(new ContinueStmt());
         }
 
-        return new ParseFail<EmptyStatement*>(
-                "Semi-colon expected, but not found.");
+        return new ParseFail<ContinueStmt*>(
+                "continue and `;` expected");
     }
+ 
+};
 
-    static EmptyStatement *emptyStatement()
+/* A break statement. Is only valid inside a loop body.*/
+class BreakStmt: public Statement
+{
+public:
+    static ParseResult<BreakStmt*> *tryParse(TokenBuffer& tokenBuffer)
     {
-        if (emptyStmt == nullptr) {
-            emptyStmt = new EmptyStatement();
+        if (tokenBuffer.readLexemes({"break", ";"})) {
+            return new ParseSuccess<BreakStmt*>(new BreakStmt());
         }
 
-        return emptyStmt;
+        return new ParseFail<BreakStmt*>(
+                "break and `;` expected");
     }
-
-private:
-    static EmptyStatement *emptyStmt;
-
-    EmptyStatement() {}
-    ~EmptyStatement() {}
 };
 
 /**
@@ -130,28 +138,18 @@ public:
 class IfStmt: public Statement
 {
 public:
-    const std::vector<Expression*> conditions;
-    const std::vector<Statement*> clauses;
+    Expression *const condition;
+    Statement *const consequent;
+    Statement *const alternate;
 
-    // General if statement.
-    IfStmt(const std::vector<Expression*> conds,
-           const std::vector<Statement*> _cls):
-        conditions(conds), clauses(_cls) {}
-
-    // Simple if statement, with no alternative clause.
-    IfStmt(Expression* cond, Statement* consequent):
-        conditions(std::vector<Expression*>{cond}),
-        clauses(std::vector<Statement*>{consequent}) {}
+    IfStmt(Expression* const cond, Statement *const stmt, Statement *const alt):
+        condition(cond), consequent(stmt) , alternate(alt){}
 
     ~IfStmt()
     {
-        for (auto cond: conditions) {
-            delete cond;
-        }
-
-        for (auto clause: clauses) {
-            delete clause;
-        }
+        delete condition;
+        delete consequent;
+        delete alternate;
     }
 
     static ParseResult<IfStmt*> *tryParse(TokenBuffer& tokenBuffer);
@@ -186,8 +184,8 @@ public:
 
 /**
  * Parse a statement starting at the current position. A valid statement is
- * expected when calling this, so parseStmt either returns a valid statement
- * object or throws a SyntaxError exception.
+ * expected starting at the current position, so parseStmt either returns a
+ * valid statement object or throws a SyntaxError exception.
  */
 ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer);
 #endif
