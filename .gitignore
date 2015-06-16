@@ -10,3 +10,7 @@ compiler/test_grammar
 # Binary and Object file folders.
 bin
 obj
+
+# Eclipse related files.
+.cproject
+.project
