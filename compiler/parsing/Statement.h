@@ -141,15 +141,40 @@ public:
     static ParseResult<StatementBlock*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
+/* Assignment operator types. */
+enum class AssignmentOp
+{
+    EQ = 0, // a = b
+    PLUS_EQ, // a += b
+    MINUS_EQ,
+    MOD_EQ,
+    MULT_EQ,
+    DIV_EQ,
+    OR_EQ,
+    BITWISE_OR_EQ,
+    AND_EQ,
+    BITWISE_AND_EQ,
+    BITWISE_NOT_EQ,
+    BITWISE_XOR_EQ,
+
+    INVALID,
+};
+
+/* Get the assignment operator type of a token. */
+AssignmentOp getAssignmentOpType(const Token& tok);
+
+/* Return the AssignmentOp type of an assignment operator token.*/
 /* Statements for assigning a new value to a variable.*/
 class Assignment: public Statement
 {
 public:
     const std::string varName;
     Expression *const newValueExpr;
+    const AssignmentOp assignOpType;
 
-    Assignment(const std::string& var, Expression *const newValExpr):
-        varName(var), newValueExpr(newValExpr) {}
+    Assignment(const std::string& var, Expression *const newValExpr,
+               const AssignmentOp opType):
+        varName(var), newValueExpr(newValExpr), assignOpType(opType) {}
 
     ~Assignment()
     {

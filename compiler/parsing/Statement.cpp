@@ -1,5 +1,39 @@
 #include "Statement.h"
 
+/* Get the assignment operator type of a given token. */
+AssignmentOp getAssignmentOpType(const Token& tok)
+{
+    switch (tok.type)
+    {
+        case TokenType::ASSIGNMENT:
+            return AssignmentOp::EQ;
+        case TokenType::PLUS_EQ:
+            return AssignmentOp::PLUS_EQ;
+        case TokenType::MINUS_EQ:
+            return AssignmentOp::MINUS_EQ;
+        case TokenType::MULT_EQ:
+            return AssignmentOp::MULT_EQ;
+        case TokenType::DIV_EQ:
+            return AssignmentOp::DIV_EQ;
+        case TokenType::MOD_EQ:
+            return AssignmentOp::MOD_EQ;
+        case TokenType::OR_EQ:
+            return AssignmentOp::OR_EQ;
+        case TokenType::BITWISE_OR_EQ:
+            return AssignmentOp::BITWISE_OR_EQ;
+        case TokenType::AND_EQ:
+            return AssignmentOp::AND_EQ;
+        case TokenType::BITWISE_AND_EQ:
+            return AssignmentOp::BITWISE_AND_EQ;
+        case TokenType::BITWISE_NOT_EQ:
+            return AssignmentOp::BITWISE_NOT_EQ;
+        case TokenType::BITWISE_XOR_EQ:
+            return AssignmentOp::BITWISE_XOR_EQ;
+        default:
+            return AssignmentOp::INVALID;
+    }
+}
+
 // Define the destructor.
 Statement::~Statement() {}
 
@@ -107,17 +141,111 @@ ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
 ParseResult<std::vector<Statement*> > *parseAssignments(
                                         TokenBuffer& tokenBuffer)
 {
-    // TODO(Vinay) -> Implement this.
-    return new ParseFail<std::vector<Statement*> >(
-            "parseAssignments not implemented yet.");
+    // Try to read a statement of multiple assignments.
+    // Reset the token buffer state and return failure in case parsing fails.
+    // VARNAME `=` EXPRESSION (`,` VARNAME `=` EXPRESSION)* `;`
+
+    int startingTokenBufferState = tokenBuffer.getCurrentState();
+
+    std::vector<Statement*> ret;
+    for (bool firstTime = true; ; firstTime = false) {
+        if (!firstTime) {
+            // Either a `;` or a `,` are expected.
+            if (tokenBuffer.readLexemes({";"})) {
+                break;
+            }
+
+            if (!tokenBuffer.readLexemes({","})) {
+                tokenBuffer.setState(startingTokenBufferState);
+                return new ParseFail<std::vector<Statement*> >(
+                        "Either a comma or semi-colon expected, but not found");
+            }
+        }
+
+        Token varToken = tokenBuffer.getCurrentToken();
+        if (varToken.type != TokenType::IDENTIFIER) {
+            tokenBuffer.setState(startingTokenBufferState);
+            return new ParseFail<std::vector<Statement*> >(
+                    "No variable found in assignment statement.");
+        }
+
+        Token assignOpToken = tokenBuffer.getCurrentToken();
+        if (getAssignmentOpType(assignOpToken) == AssignmentOp::INVALID)
+        {
+            tokenBuffer.setState(startingTokenBufferState);
+            return new ParseFail<std::vector<Statement*> >(
+                    "Assignment operator not found after the variable");
+        }
+
+        // Assignment operator seen, so this is an assignment statement.
+        // Failure after this point means a syntax error.
+        ParseResult<Expression*> *expr = parseExpr(tokenBuffer);
+        if (!expr->isParseSuccessful()) {
+            throw SyntaxError(assignOpToken.lineNo,
+                    "Expression not found after the assignment operator.");
+        }
+
+        ret.push_back(new Assignment(varToken.lexeme, expr->result(),
+                                     getAssignmentOpType(assignOpToken)));
+    }
+
+    return new ParseSuccess<std::vector<Statement*> >(ret);
 }
 
 ParseResult<std::vector<Statement*> > *parseDeclarations(
                                         TokenBuffer& tokenBuffer)
 {
-    // TODO(Vinay) -> Implement this.
-    return new ParseFail<std::vector<Statement*> >(
-            "parseDeclarations not implemented yet.");
+    // TYPENAME VARNAME (`=` EXPR)? (`,` VARNAME (`=` EXPR)?)* `;`
+    int tokenBufferStartState = tokenBuffer.getCurrentState();
+
+    Token typeNameToken = tokenBuffer.getCurrentToken();
+    if (typeNameToken.type != TokenType::IDENTIFIER) {
+        tokenBuffer.setState(tokenBufferStartState);
+        return new ParseFail<std::vector<Statement*> >(
+                "Type name expected in a variable declaration.");
+    }
+
+    std::vector<Statement*> ret;
+    for (bool firstTime = true; ; firstTime = false) {
+        if (tokenBuffer.readLexemes({";"}))
+            break;
+
+        if (!firstTime) {
+            if (!tokenBuffer.readLexemes({","})) {
+                throw SyntaxError(tokenBuffer.line(),
+                        "Comma expected but not found");
+            }
+        }
+
+        Token varNameToken = tokenBuffer.getCurrentToken();
+        if (varNameToken.type != TokenType::IDENTIFIER) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Variable name expected, not found");
+        }
+
+        if (tokenBuffer.readLexemes({"="})) {
+            ParseResult<Expression*> *expr = parseExpr(tokenBuffer);
+            if (!expr->isParseSuccessful()) {
+                throw SyntaxError(tokenBuffer.line(),
+                    "Illegal expression in the assignment statement.");
+            }
+            ret.push_back(new DeclareAndInit(
+                                typeNameToken.lexeme,
+                                varNameToken.lexeme,
+                                expr->result()));
+        } else {
+            ret.push_back(new VarDecl(typeNameToken.lexeme,
+                                      varNameToken.lexeme));
+        }
+    }
+
+    if (ret.empty()) {
+        // TYPENAME `;`
+        throw SyntaxError(tokenBuffer.line(),
+                "Invalid statement");
+    }
+
+    return new ParseSuccess<std::vector<Statement*> >(ret);
 }
 
 ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
