@@ -66,20 +66,9 @@ ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
 
 ParseResult<ForStmt*> *ForStmt::tryParse(TokenBuffer& tokenBuffer)
 {
+    // `for` `(` stmt expr `;` hanging_stmt `)` stmt
     return new ParseFail<ForStmt*>(
             "ForStmt::tryParse not implemented yet.");
-}
-
-ParseResult<VarDecl*> *VarDecl::tryParse(TokenBuffer& tokenBuffer)
-{
-    return new ParseFail<VarDecl*>(
-            "VarDecl::tryParse not implemented yet.");
-}
-
-ParseResult<Assignment*> *Assignment::tryParse(TokenBuffer& tokenBuffer)
-{
-    return new ParseFail<Assignment*>(
-            "Assignment::tryParse not implemented yet.");
 }
 
 #define tryAndReturn(STMT_TYPE, stmtObj) ParseResult<STMT_TYPE*> *stmtObj\
@@ -102,14 +91,51 @@ ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
 {
     
     tryAndReturn(EmptyStatement, emptyStmt);
-    tryAndReturn(ContinueStmt, continueStmt);
-    tryAndReturn(BreakStmt, breakStmt);
+    tryAndReturn(ContinueStmt, contStmt);
+    tryAndReturn(ReturnStmt, retStmt);
+    tryAndReturn(BreakStmt, brkStmt);
 
     tryAndReturn(StatementBlock, blockStmt);
     tryAndReturn(IfStmt, ifStmt);
     tryAndReturn(ForStmt, forStmt);
-    tryAndReturn(VarDecl, varDecl);
-    tryAndReturn(Assignment, assignStmt);
+    tryAndReturn(HangingStmt, hangingStmt);
+
     throw SyntaxError(tokenBuffer.line(),
                       "Statement expected, not found");
+}
+
+ParseResult<std::vector<Statement*> > *parseAssignments(
+                                        TokenBuffer& tokenBuffer)
+{
+    // TODO(Vinay) -> Implement this.
+    return new ParseFail<std::vector<Statement*> >(
+            "parseAssignments not implemented yet.");
+}
+
+ParseResult<std::vector<Statement*> > *parseDeclarations(
+                                        TokenBuffer& tokenBuffer)
+{
+    // TODO(Vinay) -> Implement this.
+    return new ParseFail<std::vector<Statement*> >(
+            "parseDeclarations not implemented yet.");
+}
+
+ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
+{
+    auto ret = parseAssignments(tokenBuffer);
+    if (ret->isParseSuccessful()) {
+        HangingStmt *hangingStmt = new HangingStmt(ret->result());
+        delete ret;
+        return new ParseSuccess<HangingStmt*>(hangingStmt);
+    }
+
+    ret = parseDeclarations(tokenBuffer);
+    if (ret->isParseSuccessful()) {
+        HangingStmt *hangingStmt = new HangingStmt(ret->result());
+        delete ret;
+        return new ParseSuccess<HangingStmt*>(hangingStmt);
+    }
+
+    return new ParseFail<HangingStmt*>(
+            "Not a variable declaration nor an assignment statement.");
 }

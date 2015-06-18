@@ -61,6 +61,48 @@ public:
 };
 
 /**
+ * A return statement. Two possible variations.
+ * `return` expr `;`
+ * `return` `;`
+ */
+class ReturnStmt: public Statement
+{
+public:
+    Expression *const returnedExpr;
+
+    ReturnStmt(Expression* const retExpr = nullptr):
+        returnedExpr(retExpr) {}
+
+    ~ReturnStmt()
+    {
+        if (returnedExpr != nullptr)
+        {
+            delete returnedExpr;
+        }
+    }
+
+    static ParseResult<ReturnStmt*> *tryParse(TokenBuffer& tokenBuffer)
+    {
+        if (tokenBuffer.readLexemes({"return", ";"})) {
+            return new ParseSuccess<ReturnStmt*>(nullptr);
+        }
+        else if (tokenBuffer.readLexemes({"return"})) {
+            ParseResult<Expression*> *expr = parseExpr(tokenBuffer);
+            if (expr->isParseSuccessful()) {
+                return new ParseSuccess<ReturnStmt*>(
+                        new ReturnStmt(expr->result()));
+            }
+            // Expression expected.
+            throw SyntaxError(tokenBuffer.line(),
+                    "Expression expected after the return keyword.");
+        }
+
+        return new ParseFail<ReturnStmt*>(
+                "return keyword expected, but not found");
+    }
+};
+
+/**
  * Statements of the form expr `;` are valid and simply evaluate the
  * expression.
  */
@@ -99,29 +141,45 @@ public:
     static ParseResult<StatementBlock*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
-/**
- * Variable assignment, in which a variable gets assigned a value(which is an
- * expression in source code.)
-*/
+/* Statements for assigning a new value to a variable.*/
 class Assignment: public Statement
+{
+public:
+    const std::string varName;
+    Expression *const newValueExpr;
+
+    Assignment(const std::string& var, Expression *const newValExpr):
+        varName(var), newValueExpr(newValExpr) {}
+
+    ~Assignment()
+    {
+        delete newValueExpr;
+    }
+};
+
+/**
+ * Declare and initialize a variable in a single statement
+*/
+class DeclareAndInit: public Statement
 {
 public:
     const std::string typeName;
     const std::string varName;
     Expression* const valueExpr;
 
-    Assignment(const std::string& type, const std::string& name,
+    DeclareAndInit(const std::string& type, const std::string& name,
                Expression* valExpr):
         typeName(type), varName(name), valueExpr(valExpr) {}
 
-    ~Assignment()
+    ~DeclareAndInit()
     {
         delete valueExpr;
     }
 
-    static ParseResult<Assignment*> *tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<DeclareAndInit*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
+/* Variable declarations.*/
 class VarDecl: public Statement
 {
 public:
@@ -132,6 +190,27 @@ public:
         typeName(type), varName(name) {}
 
     static ParseResult<VarDecl*> *tryParse(TokenBuffer& tokenBuffer);
+};
+
+/* A compound statement to do multiple declarations or assignments.*/
+class HangingStmt: public Statement
+{
+public:
+    std::vector<Statement*> statements;
+
+    HangingStmt(const std::vector<Statement*>& stmts):
+        statements(stmts) {}
+
+    static ParseResult<HangingStmt*> *tryParse(TokenBuffer& tokenBuffer);
+
+    ~HangingStmt()
+    {
+        for (auto stmt: statements) {
+            delete stmt;
+        }
+
+        statements.clear();
+    }
 };
 
 /* If statement is a sequence of condition, statement_block pairs.*/
