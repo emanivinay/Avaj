@@ -80,6 +80,11 @@ ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
                 "Failed reading a condition expression.");
     }
 
+    if (!tokenBuffer.readLexemes({")"})) {
+        throw SyntaxError(tokenBuffer.line(),
+                "Closing paren not found after condition expression.");
+    }
+
     ParseResult<Statement*> *consequent = parseStmt(tokenBuffer);
     if (!consequent->isParseSuccessful()) {
         throw SyntaxError(tokenBuffer.line(),
@@ -100,9 +105,15 @@ ParseResult<IfStmt*> *IfStmt::tryParse(TokenBuffer& tokenBuffer)
 
 ParseResult<ForStmt*> *ForStmt::tryParse(TokenBuffer& tokenBuffer)
 {
-    // `for` `(` stmt expr `;` hanging_stmt `)` stmt
-    return new ParseFail<ForStmt*>(
-            "ForStmt::tryParse not implemented yet.");
+    if (tokenBuffer.readLexemes({"while"})) {
+        // `while` `(` EXPR `)` STMT
+    }
+    else if (tokenBuffer.readLexemes({"for"})) {
+    }
+    else {
+        return new ParseFail<ForStmt*>(
+                "for or while keyword expected, not found");
+    }
 }
 
 #define tryAndReturn(STMT_TYPE, stmtObj) ParseResult<STMT_TYPE*> *stmtObj\
@@ -248,6 +259,21 @@ ParseResult<std::vector<Statement*> > *parseDeclarations(
     return new ParseSuccess<std::vector<Statement*> >(ret);
 }
 
+/* Expression statements are of the form EXPRESSION `;` */
+ParseResult<std::vector<Statement*> > *parseExprStatement(
+                                        TokenBuffer& tokenBuffer)
+{
+    ParseResult<Expression*> *expr = parseExpr(tokenBuffer);
+    if (!expr->isParseSuccessful() || !tokenBuffer.readLexemes({";"})) {
+        delete expr;
+        return new ParseFail<std::vector<Statement*> >(
+                "Valid expression followed by a semi-colon expected.");
+    }
+
+    return new ParseSuccess<std::vector<Statement*> > (
+                                        {new ExprStatement(expr->result())});
+}
+
 ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
 {
     auto ret = parseAssignments(tokenBuffer);
@@ -256,6 +282,7 @@ ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
         delete ret;
         return new ParseSuccess<HangingStmt*>(hangingStmt);
     }
+    delete ret;
 
     ret = parseDeclarations(tokenBuffer);
     if (ret->isParseSuccessful()) {
@@ -263,7 +290,17 @@ ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
         delete ret;
         return new ParseSuccess<HangingStmt*>(hangingStmt);
     }
+    delete ret;
 
+    ret = parseExprStatement(tokenBuffer);
+    if (ret->isParseSuccessful()) {
+        HangingStmt *hangingStmt = new HangingStmt(ret->result());
+        delete ret;
+        return new ParseSuccess<HangingStmt*>(hangingStmt);
+    }
+    delete ret;
+
+    std::cout << "Exiting HangingStmt::tryParse" << std::endl;
     return new ParseFail<HangingStmt*>(
             "Not a variable declaration nor an assignment statement.");
 }

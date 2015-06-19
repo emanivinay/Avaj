@@ -1,0 +1,13 @@
+1;
+2;
+3;
+4;
+4 + 5 * 6;
+a = 1, b = 2, c = 3;
+Int samAge, bilboAge = 111, frodoAge = 33;
+{
+    int a = 1;
+}
+
+if (1) {} else {a += 12;}
+for (; ;) {}

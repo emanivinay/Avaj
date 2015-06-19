@@ -8,7 +8,7 @@ components: base lexer parser
 
 base: syntax_error source_buffer
 
-test_drivers: source_buffer_driver lexer_driver expression_driver parser_driver
+test_drivers: source_buffer_driver lexer_driver expression_driver parser_driver statement_driver
 
 ########################### BASE TARGETS ######################################
 
@@ -48,6 +48,9 @@ expression_driver: lexer parser_base expression tests/ExpressionDriver.cpp
 
 statement: ${PARSER_DIR}/Statement.cpp
 	${CC} -c -o obj/Statement ${PARSER_DIR}/Statement.cpp
+
+statement_driver: lexer parser_base expression statement tests/Statements.cpp
+	${CC} -o bin/Statements tests/Statements.cpp obj/*
 
 class: ${PARSER_DIR}/Class.cpp
 	${CC} -c -o obj/Class ${PARSER_DIR}/Class.cpp

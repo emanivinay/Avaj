@@ -1,6 +1,6 @@
 #include "Expression.h"
 
-#define LOG_MSG(fmtString, ...) printf(fmtString, ##__VA_ARGS__)
+#define LOG_MSG(fmtString, ...)
 
 Expression::~Expression() {}
 

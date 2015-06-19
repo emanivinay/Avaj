@@ -7,6 +7,7 @@
 #include "ParseResult.h"
 #include "ParserUtils.h"
 
+#define DESC_CONS(CLASSNAME) CLASSNAME () {std::cout << #CLASSNAME << std::endl;}
 /**
  * Statements of the Avaj programming language.
  */
@@ -27,6 +28,8 @@ class EmptyStatement: public Statement
 {
 public:
     static ParseResult<EmptyStatement*> *tryParse(TokenBuffer& tokenBuffer);
+
+    DESC_CONS(EmptyStatement);
 };
 
 /* A continue statement. Is only valid inside a loop body.*/
@@ -42,7 +45,8 @@ public:
         return new ParseFail<ContinueStmt*>(
                 "continue and `;` expected");
     }
- 
+
+    DESC_CONS(ContinueStmt);
 };
 
 /* A break statement. Is only valid inside a loop body.*/
@@ -58,6 +62,8 @@ public:
         return new ParseFail<BreakStmt*>(
                 "break and `;` expected");
     }
+
+    DESC_CONS(BreakStmt);
 };
 
 /**
@@ -71,7 +77,10 @@ public:
     Expression *const returnedExpr;
 
     ReturnStmt(Expression* const retExpr = nullptr):
-        returnedExpr(retExpr) {}
+        returnedExpr(retExpr)
+    {
+        std::cout << "ReturnStmt" << std::endl;
+    }
 
     ~ReturnStmt()
     {
@@ -112,7 +121,10 @@ public:
     Expression* const expr;
     
     ExprStatement(Expression* e):
-        expr(e) {}
+        expr(e)
+    {
+        std::cout << "ExprStatement" << std::endl;
+    }
 
     ~ExprStatement()
     {
@@ -129,7 +141,10 @@ public:
     const std::vector<Statement*> statements;
 
     StatementBlock(const std::vector<Statement*>& stmts):
-        statements(stmts) {}
+        statements(stmts)
+    {
+        std::cout << "StatementBlock" << std::endl;
+    }
 
     ~StatementBlock()
     {
@@ -174,12 +189,16 @@ public:
 
     Assignment(const std::string& var, Expression *const newValExpr,
                const AssignmentOp opType):
-        varName(var), newValueExpr(newValExpr), assignOpType(opType) {}
+        varName(var), newValueExpr(newValExpr), assignOpType(opType)
+    {
+        std::cout << "Assignment" << std::endl;
+    }
 
     ~Assignment()
     {
         delete newValueExpr;
     }
+
 };
 
 /**
@@ -194,7 +213,10 @@ public:
 
     DeclareAndInit(const std::string& type, const std::string& name,
                Expression* valExpr):
-        typeName(type), varName(name), valueExpr(valExpr) {}
+        typeName(type), varName(name), valueExpr(valExpr)
+    {
+        std::cout << "DeclareAndInit" << std::endl;
+    }
 
     ~DeclareAndInit()
     {
@@ -212,7 +234,11 @@ public:
     const std::string varName;
 
     VarDecl(const std::string& type, const std::string& name):
-        typeName(type), varName(name) {}
+        typeName(type), varName(name)
+    {
+        std::cout << "VarDecl" << std::endl;
+    }
+
 
     static ParseResult<VarDecl*> *tryParse(TokenBuffer& tokenBuffer);
 };
@@ -224,7 +250,9 @@ public:
     std::vector<Statement*> statements;
 
     HangingStmt(const std::vector<Statement*>& stmts):
-        statements(stmts) {}
+        statements(stmts) 
+    {
+    }
 
     static ParseResult<HangingStmt*> *tryParse(TokenBuffer& tokenBuffer);
 
@@ -247,7 +275,10 @@ public:
     Statement *const alternate;
 
     IfStmt(Expression* const cond, Statement *const stmt, Statement *const alt):
-        condition(cond), consequent(stmt) , alternate(alt){}
+        condition(cond), consequent(stmt) , alternate(alt)
+    {
+        std::cout << "IfStmt" << std::endl;
+    }
 
     ~IfStmt()
     {
@@ -273,7 +304,10 @@ public:
 
     ForStmt(Statement* const init, Expression* const test,
             Statement* const iter, Statement* const _body):
-        initStmt(init), testExpr(test), iterateStmt(iter), body(_body) {}
+        initStmt(init), testExpr(test), iterateStmt(iter), body(_body)
+    {
+        std::cout << "ForStmt" << std::endl;
+    }
 
     ~ForStmt()
     {
