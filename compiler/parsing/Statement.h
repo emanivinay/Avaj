@@ -254,7 +254,8 @@ public:
     {
     }
 
-    static ParseResult<HangingStmt*> *tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<HangingStmt*> *tryParse(TokenBuffer& tokenBuffer,
+                                               const std::string& end = ";");
 
     ~HangingStmt()
     {

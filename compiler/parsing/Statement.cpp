@@ -107,12 +107,84 @@ ParseResult<ForStmt*> *ForStmt::tryParse(TokenBuffer& tokenBuffer)
 {
     if (tokenBuffer.readLexemes({"while"})) {
         // `while` `(` EXPR `)` STMT
+        if (!tokenBuffer.readLexemes({"("})) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Left paren not found after while keyword");
+        }
+
+        // TODO(Vinay) -> Extend this to accept the empty condition.
+        ParseResult<Expression*> *condition = parseExpr(tokenBuffer);
+        if (!condition->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "A valid conditon expression expected in while stmt.");
+        }
+
+        if (!tokenBuffer.readLexemes({")"})) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Right paren not found after condition in while stmt.");
+        }
+
+        ParseResult<Statement*> *loopStmt = parseStmt(tokenBuffer);
+        if (!loopStmt->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Valid statement body not found in while statement.");
+        }
+
+        ForStmt *whileStmt = new ForStmt(new EmptyStatement(),
+                                           condition->result(),
+                                           new EmptyStatement(),
+                                           loopStmt->result());
+
+        return new ParseSuccess<ForStmt*>(whileStmt);
     }
     else if (tokenBuffer.readLexemes({"for"})) {
+        if (!tokenBuffer.readLexemes({"("})) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Left paren not found after for keyword.");
+        }
+
+        ParseResult<HangingStmt*> *initStmt = HangingStmt::tryParse(
+                                                tokenBuffer, ";");
+        if (!initStmt->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Valid initialization statement not found in for form.");
+        }
+
+        ParseResult<Expression*> *condition = parseExpr(tokenBuffer);
+        if (!condition->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Valid test condition not found in for statement.");
+        }
+
+        if (!tokenBuffer.readLexemes({";"})) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Semi-colon expected after condition in for stmt.");
+        }
+
+        ParseResult<HangingStmt*> *iterStmt = HangingStmt::tryParse(
+                                                tokenBuffer,
+                                                ")");
+        if (!iterStmt->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Valid iteration statement not found in for stmt.");
+        }
+
+        ParseResult<Statement*> *loopBody = parseStmt(tokenBuffer);
+        if (!loopBody->isParseSuccessful()) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Valid loop body not found in for stmt.");
+        }
+
+        ForStmt* forStmt = new ForStmt(initStmt->result(),
+                                       condition->result(),
+                                       iterStmt->result(),
+                                       loopBody->result());
+
+        return new ParseSuccess<ForStmt*>(forStmt);
     }
     else {
         return new ParseFail<ForStmt*>(
-                "for or while keyword expected, not found");
+                "for/while keyword expected, not found");
     }
 }
 
@@ -150,7 +222,8 @@ ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer)
 }
 
 ParseResult<std::vector<Statement*> > *parseAssignments(
-                                        TokenBuffer& tokenBuffer)
+                                        TokenBuffer& tokenBuffer,
+                                        const std::string& end)
 {
     // Try to read a statement of multiple assignments.
     // Reset the token buffer state and return failure in case parsing fails.
@@ -162,7 +235,7 @@ ParseResult<std::vector<Statement*> > *parseAssignments(
     for (bool firstTime = true; ; firstTime = false) {
         if (!firstTime) {
             // Either a `;` or a `,` are expected.
-            if (tokenBuffer.readLexemes({";"})) {
+            if (tokenBuffer.readLexemes({end})) {
                 break;
             }
 
@@ -204,7 +277,8 @@ ParseResult<std::vector<Statement*> > *parseAssignments(
 }
 
 ParseResult<std::vector<Statement*> > *parseDeclarations(
-                                        TokenBuffer& tokenBuffer)
+                                        TokenBuffer& tokenBuffer,
+                                        const std::string& end)
 {
     // TYPENAME VARNAME (`=` EXPR)? (`,` VARNAME (`=` EXPR)?)* `;`
     int tokenBufferStartState = tokenBuffer.getCurrentState();
@@ -218,7 +292,7 @@ ParseResult<std::vector<Statement*> > *parseDeclarations(
 
     std::vector<Statement*> ret;
     for (bool firstTime = true; ; firstTime = false) {
-        if (tokenBuffer.readLexemes({";"}))
+        if (tokenBuffer.readLexemes({end}))
             break;
 
         if (!firstTime) {
@@ -261,10 +335,11 @@ ParseResult<std::vector<Statement*> > *parseDeclarations(
 
 /* Expression statements are of the form EXPRESSION `;` */
 ParseResult<std::vector<Statement*> > *parseExprStatement(
-                                        TokenBuffer& tokenBuffer)
+                                        TokenBuffer& tokenBuffer,
+                                        const std::string& end)
 {
     ParseResult<Expression*> *expr = parseExpr(tokenBuffer);
-    if (!expr->isParseSuccessful() || !tokenBuffer.readLexemes({";"})) {
+    if (!expr->isParseSuccessful() || !tokenBuffer.readLexemes({end})) {
         delete expr;
         return new ParseFail<std::vector<Statement*> >(
                 "Valid expression followed by a semi-colon expected.");
@@ -274,9 +349,10 @@ ParseResult<std::vector<Statement*> > *parseExprStatement(
                                         {new ExprStatement(expr->result())});
 }
 
-ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
+ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer,
+                                                 const std::string& end)
 {
-    auto ret = parseAssignments(tokenBuffer);
+    auto ret = parseAssignments(tokenBuffer, end);
     if (ret->isParseSuccessful()) {
         HangingStmt *hangingStmt = new HangingStmt(ret->result());
         delete ret;
@@ -284,7 +360,7 @@ ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
     }
     delete ret;
 
-    ret = parseDeclarations(tokenBuffer);
+    ret = parseDeclarations(tokenBuffer, end);
     if (ret->isParseSuccessful()) {
         HangingStmt *hangingStmt = new HangingStmt(ret->result());
         delete ret;
@@ -292,7 +368,7 @@ ParseResult<HangingStmt*> *HangingStmt::tryParse(TokenBuffer& tokenBuffer)
     }
     delete ret;
 
-    ret = parseExprStatement(tokenBuffer);
+    ret = parseExprStatement(tokenBuffer, end);
     if (ret->isParseSuccessful()) {
         HangingStmt *hangingStmt = new HangingStmt(ret->result());
         delete ret;
