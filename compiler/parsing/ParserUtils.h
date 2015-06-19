@@ -11,13 +11,13 @@
  * once. Tries to read as many elements as possible.
  */
 template<class T>
-ParseResult<std::vector<T> >* tryParseMultiple(TokenBuffer& tokenBuffer)
+ParseResult<std::vector<T*> >* tryParseMultiple(TokenBuffer& tokenBuffer)
 {
     // While, this function itself doesn't raise any exceptions, tryParse
     // calls might, which must be handled at higher levels in the call stack.
-    std::vector<T> ret;
+    std::vector<T*> ret;
     while (true) {
-        ParseResult<T> *one = T::tryParse(tokenBuffer);
+        ParseResult<T*> *one = T::tryParse(tokenBuffer);
         if (!one->isParseSuccessful()) {
             delete one;
             break;
@@ -26,7 +26,7 @@ ParseResult<std::vector<T> >* tryParseMultiple(TokenBuffer& tokenBuffer)
         delete one;
     }
 
-    return new ParseSuccess<std::vector<T> >(ret);
+    return new ParseSuccess<std::vector<T*> >(ret);
 }
 
 /**

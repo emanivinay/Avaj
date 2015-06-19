@@ -1,7 +1,7 @@
 #include "AST.h"
 #include "ParserUtils.h"
 
-ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
+ParseResult<Import*>* Import::tryParse(TokenBuffer& tokenBuffer)
 {
     // Import statements are of the following form.
     // import "..." ;
@@ -9,7 +9,7 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
     Token& kwToken = tokenBuffer.getCurrentToken();
     if (kwToken.type != TokenType::KEYWORD || kwToken.lexeme != "import") {
         tokenBuffer.putTokenBack(kwToken);
-        return new ParseFail<Import>("import keyword not found");
+        return new ParseFail<Import*>("import keyword not found");
     }
 
     Token& strLiteralToken = tokenBuffer.getCurrentToken();
@@ -24,21 +24,21 @@ ParseResult<Import>* Import::tryParse(TokenBuffer& tokenBuffer)
                 "Semi colon not found in the import statement.");
     }
 
-    return new ParseSuccess<Import>(Import(strLiteralToken.lexeme));
+    return new ParseSuccess<Import*>(new Import(strLiteralToken.lexeme));
 }
 
 /* Parse a source file into an abstract syntax tree(AST).*/
-ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
+ParseResult<AST*>* AST::tryParse(TokenBuffer& tokenBuffer)
 {
     // Each source file has several imports followed by class definitions.
-    ParseResult<std::vector<Import> > *parsedImports = 
+    ParseResult<std::vector<Import*> > *parsedImports = 
                     tryParseMultiple<Import>(tokenBuffer);
-    std::vector<Import> imports = parsedImports->result();
+    std::vector<Import*> imports = parsedImports->result();
     delete parsedImports;
 
-    ParseResult<std::vector<Class> > *parsedClassDefns =
+    ParseResult<std::vector<Class*> > *parsedClassDefns =
                     tryParseMultiple<Class>(tokenBuffer);
-    std::vector<Class> classes = parsedClassDefns->result();
+    std::vector<Class*> classes = parsedClassDefns->result();
     delete parsedClassDefns;
 
     Token eofToken = tokenBuffer.getCurrentToken();
@@ -47,5 +47,5 @@ ParseResult<AST>* AST::tryParse(TokenBuffer& tokenBuffer)
                 "Extraneous input at the end.");
     }
 
-    return new ParseSuccess<AST>(AST(imports, classes));
+    return new ParseSuccess<AST*>(new AST(imports, classes));
 }

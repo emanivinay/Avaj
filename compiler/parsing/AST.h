@@ -16,7 +16,7 @@ public:
 
     std::string importString;
 
-    static ParseResult<Import>* tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<Import*>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -25,13 +25,13 @@ public:
 class AST
 {
 public:
-    const std::vector<Import> imports;
-    const std::vector<Class> classes;
+    const std::vector<Import*> imports;
+    const std::vector<Class*> classes;
 
-    AST(const std::vector<Import>& _imports,
-        const std::vector<Class>& _classes):
+    AST(const std::vector<Import*>& _imports,
+        const std::vector<Class*>& _classes):
         imports(_imports), classes(_classes) {}
 
-    static ParseResult<AST>* tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<AST*>* tryParse(TokenBuffer& tokenBuffer);
 };
 #endif
