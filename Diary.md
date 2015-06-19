@@ -79,3 +79,18 @@ interest in it.
 
 *   So, the next task is to finish the parser module and then start sketching out the
 semantics of the language.
+
+### 06/19/15
+
+*   Finally, finished writing parser module. Hasn't been tested, though. But I
+am reasonably confident what I have now is mostly correct. We'll see, now onto
+language semantics.
+
+*   Semantics -> What constitutes the semantics of a language?
+    *   Object orientation(for Avaj)
+    *   Type system
+    *   Runtime behavior
+    *   Any thing else?
+
+*   I'll be try to think along these 3 axes and come up with a good programming
+model
