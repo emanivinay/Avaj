@@ -2,6 +2,7 @@
 #define _PARSER_H_
 
 #include "headers.h"
+#include "SyntaxError.h"
 #include "SourceBuffer.h"
 #include "Lexer.h"
 #include "ParseResult.h"
@@ -20,7 +21,7 @@ public:
     Parser(const std::string& souceFile);
 
     /* Construct AST from the given source file.*/
-    ParseResult<AST>* constructAST();
+    ParseResult<AST*>* constructAST();
 
 private:
     TokenBuffer tokenBuffer;

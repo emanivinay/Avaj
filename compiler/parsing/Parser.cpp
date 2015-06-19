@@ -5,7 +5,7 @@ Parser::Parser(const std::string& sourceFile):
 {
 }
 
-ParseResult<AST>* Parser::constructAST()
+ParseResult<AST*>* Parser::constructAST()
 {
     return AST::tryParse(tokenBuffer);
 }
