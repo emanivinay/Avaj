@@ -55,8 +55,39 @@ ParseResult<ClassMemberCommonData*> *parseClassMemberCommon(
 
 ParseResult<MethodParams*> *MethodParams::tryParse(TokenBuffer& tokenBuffer)
 {
-    return new ParseFail<MethodParams*>(
-            "MethodParams::tryParse yet to be implemented.");
+    // TYPENAME ID (`,` TYPENAME ID)*
+    std::vector<std::string> paramTypes;
+    std::vector<std::string> paramNames;
+
+    for (bool first = true; ; first = false) {
+        Token& tok = tokenBuffer.getCurrentToken();
+        if (tok.type == TokenType::RIGHT_BRACKET) {
+            tokenBuffer.putTokenBack(tok);
+            break;
+        }
+
+        if (!first && tok.type != TokenType::COMMA) {
+            throw SyntaxError(tokenBuffer.line(), "Invalid method param list");
+        }
+
+        Token& typeNameToken = tokenBuffer.getCurrentToken();
+        if (typeNameToken.type != TokenType::IDENTIFIER) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Parameter type name expected in method param list.");
+        }
+
+        Token& varNameToken = tokenBuffer.getCurrentToken();
+        if (varNameToken.type != TokenType::IDENTIFIER) {
+            throw SyntaxError(tokenBuffer.line(),
+                    "Parameter name expected in method param list.");
+        }
+
+        paramTypes.push_back(typeNameToken.lexeme);
+        paramNames.push_back(varNameToken.lexeme);
+    }
+
+    return new ParseSuccess<MethodParams*>(
+            new MethodParams(paramTypes, paramNames));
 }
 
 /* Try to read a data field declaration in a class body.*/
