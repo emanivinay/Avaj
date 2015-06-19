@@ -24,21 +24,7 @@ public:
     const bool staticness;
     const bool finality;
 
-    std::string repr() const
-    {
-        std::ostringstream out;
-        if (publicness)
-            out << "public ";
-        if (staticness)
-            out << "static ";
-        if (finality)
-            out << "final ";
-        out << typeName << " ";
-        out << name;
-        return out.str();
-    }
-
-    static ParseResult<DataField>* tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<DataField*>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -47,10 +33,14 @@ public:
 class MethodParams
 {
 public:
-    const std::vector<std::pair<std::string, std::string> > paramList;
+    const std::vector<std::string> paramTypes;
+    const std::vector<std::string> paramNames;
 
-    MethodParams(const std::vector<std::pair<std::string, std::string> >& 
-            params): paramList(params) {}
+    MethodParams(const std::vector<std::string>& types, 
+                 const std::vector<std::string>& names):
+        paramTypes(types), paramNames(names) {}
+
+    static ParseResult<MethodParams*> *tryParse(TokenBuffer& tokenBuffer);
 };
 
 /* A method definition for a class. */
@@ -60,7 +50,7 @@ public:
 
     MethodDefn(const std::string& _name, const std::string& _returnTypeName,
               bool _publicness, bool _staticness, bool _finality,
-              const MethodParams& params, const Statement* body):
+              MethodParams* const params, Statement* const body):
         name(_name), returnTypeName(_returnTypeName), publicness(_publicness),
         staticness(_staticness), finality(_finality),
         methodParams(params), methodBody(body) {}
@@ -71,12 +61,12 @@ public:
     const bool staticness;
     const bool finality;
 
-    const MethodParams methodParams;
+    const MethodParams *methodParams;
 
     // Method Body is usually a statement block
     const Statement *methodBody;
 
-    static ParseResult<MethodDefn>* tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<MethodDefn*>* tryParse(TokenBuffer& tokenBuffer);
 };
 
 /**
@@ -85,18 +75,18 @@ public:
 class Class
 {
 public:
-    Class(const std::vector<DataField>& fields, 
-          const std::vector<MethodDefn>& _methods,
+    Class(const std::vector<DataField*>& fields, 
+          const std::vector<MethodDefn*>& _methods,
           bool _public,
           const std::string& _name):
         dataFields(fields), methods(_methods), publicness(_public),
-            name(_name){}
+            name(_name) {}
 
-    const std::vector<DataField> dataFields;
-    const std::vector<MethodDefn> methods;
+    const std::vector<DataField*> dataFields;
+    const std::vector<MethodDefn*> methods;
     const bool publicness;
     const std::string name;
 
-    static ParseResult<Class>* tryParse(TokenBuffer& tokenBuffer);
+    static ParseResult<Class*>* tryParse(TokenBuffer& tokenBuffer);
 };
 #endif
