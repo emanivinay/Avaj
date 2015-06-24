@@ -87,10 +87,19 @@ am reasonably confident what I have now is mostly correct. We'll see, now onto
 language semantics.
 
 *   Semantics -> What constitutes the semantics of a language?
-    *   Object orientation(for Avaj)
-    *   Type system
-    *   Runtime behavior
+    *   Central paradigm - OOP model in Avaj's case. 
+    *   Type system - Language type systems vary along a number of dimensions -
+Static/Dynamic/Hybrid, Strict/Permissive, expressivity etc..
+    *   Concurrency support - Concurrency is not supported in the first version
+    *   Runtime behavior - Evaluation model, Memory model, Concurrency etc..
     *   Any thing else?
 
 *   I'll be try to think along these 3 axes and come up with a good programming
 model
+
+### 06/23/15
+
+*   I think I'll benefit from learning assembly programming. Should be useful
+for my Avaj project and OS kernel study project.
+
+*   x64 assembly
