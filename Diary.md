@@ -103,3 +103,14 @@ model
 for my Avaj project and OS kernel study project.
 
 *   x64 assembly
+
+### 09/20/15
+
+*   After parse tree construction, then comes the semantic analysis phase. In
+this phase, type checking and program, class and statement level semantic checks
+are performed.
+
+*   Code generation follows the semantic analysis phase. Here, we generate code
+for a simple virtual machine.
+
+*   ...
