@@ -6,11 +6,6 @@ class Main
 {
     private static final String myName;
 
-    Main()
-    {
-        myName = "Vinay Emani";
-    }
-
     public static void main()
     {
         String argname = core.sys.args.get(0);
