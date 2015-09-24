@@ -348,9 +348,9 @@ ParseResult<Expression*> *parseExpr(const std::vector<Token>& tokens,
     LOG_MSG("%s %d %d\n", "Entering parseExpr(tokens)", a, b);
     if (b < 0) {
         LOG_MSG("%s\n", "First parseExpr(tokens) call");
-        for (auto& t : tokens) {
+        /*for (auto& t : tokens) {
             LOG_MSG("Token is %s\n", t.lexeme.c_str());
-        }
+        }*/
         b = (int)tokens.size() - 1;
     }
 

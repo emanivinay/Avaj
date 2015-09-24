@@ -16,10 +16,9 @@ int main(int argc, char **argv)
     for (;;) {
         try {
             ParseResult<Expression*> *parsedExpr = parseExpr(tokenBuffer);
-            cout << "After parseExpr call" << endl;
+            cout << "After parseExpr call ";
             if (parsedExpr->isParseSuccessful()) {
-                cout << "Parse successful" << endl;
-                cout << "Parsed expression is " << endl;
+                cout << "Parse expression is" << endl;
                 cout << parsedExpr->result()->repr() << endl;
                 tokenBuffer.getCurrentToken();
             }

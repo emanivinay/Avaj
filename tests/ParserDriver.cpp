@@ -10,13 +10,13 @@ int main(int argc, char **argv)
 
     try {
 
-        ParseResult<AST>* ast = parser.constructAST();
-        for (auto import : ast->result().imports)
-            cout << import.importString << endl;
+        ParseResult<AST*>* ast = parser.constructAST();
+        for (auto import : ast->result()->imports)
+            cout << import->importString << endl;
 
-        for (auto cls : ast->result().classes) {
-            for (auto fld: cls.dataFields)
-                cout << fld.repr() << endl;
+        for (auto cls : ast->result()->classes) {
+            for (auto fld: cls->dataFields)
+                cout << fld->name << " " << fld->typeName << endl;
         }
 
     } catch (SyntaxError& err) {
