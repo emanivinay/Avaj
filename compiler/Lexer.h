@@ -102,7 +102,7 @@ enum class TokenType
 static const std::set<std::string> KEYWORDS = {
     "if", "else", "while", "for", "class", "break",
     "continue", "final", "private", "public", "static",
-    "import", "new", "return", "this", "void"
+    "import", "new", "return", "this"
 };
 
 /**

@@ -1,4 +1,4 @@
-CC := g++ -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
+CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
 
 ###################### PROJECT OVERALL STRUCTURE ##############################
 

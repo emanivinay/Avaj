@@ -182,6 +182,27 @@ ParseResult<Class*>* Class::tryParse(TokenBuffer& tokenBuffer)
             // Class definition ends here.
             break;
         }
+
+        // Read a sequence of MethodDefns/DataFields.
+
+        // Try reading a data field.
+        ParseResult<DataField*> *dataField = DataField::tryParse(tokenBuffer);
+        if (dataField->isParseSuccessful()) {
+            dataFields.push_back(dataField->result());
+        }     
+        delete dataField;
+
+        // Try reading a method defn.
+        ParseResult<MethodDefn*> *methodDefn = MethodDefn::tryParse(tokenBuffer);
+        if (!methodDefn->isParseSuccessful()) {
+            delete methodDefn;
+            return new ParseFail<Class*>(
+                "Parse error, expected either a method defn or a data field.");
+        }
+        else {
+            methodDefns.push_back(methodDefn->result());
+            delete methodDefn;
+        }
     }
 
     return new ParseSuccess<Class*>(
