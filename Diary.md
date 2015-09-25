@@ -113,4 +113,7 @@ are performed.
 *   Code generation follows the semantic analysis phase. Here, we generate code
 for a simple virtual machine.
 
-*   ...
+### 09/24/15
+
+*   I had a few good wins today. First, I learned to use ddd to debug c++
+programs. I am close to finishing the parsing part.

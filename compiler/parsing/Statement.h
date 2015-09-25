@@ -215,7 +215,6 @@ public:
                Expression* valExpr):
         typeName(type), varName(name), valueExpr(valExpr)
     {
-        std::cout << "DeclareAndInit" << std::endl;
     }
 
     ~DeclareAndInit()

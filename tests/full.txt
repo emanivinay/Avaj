@@ -6,6 +6,8 @@ class Main
 {
     private static final String myName;
 
+    public int myAge;
+
     public static void main()
     {
         String argname = core.sys.args.get(0);

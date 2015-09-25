@@ -189,7 +189,9 @@ ParseResult<Class*>* Class::tryParse(TokenBuffer& tokenBuffer)
         ParseResult<DataField*> *dataField = DataField::tryParse(tokenBuffer);
         if (dataField->isParseSuccessful()) {
             dataFields.push_back(dataField->result());
-        }     
+            delete dataField;
+            continue;
+        }
         delete dataField;
 
         // Try reading a method defn.
