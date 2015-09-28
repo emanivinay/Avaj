@@ -3,12 +3,23 @@
 
 #include "headers.h"
 #include "Class.h"
+#include "Primitives.h"
 
 /* Access level of a class member.*/
 enum class AccessInfo
 {
     PUBLIC = 0,
     PRIVATE,
+    UNDEFINED,
+};
+
+/**
+ * Kind of a value/variable - reference or primitive.
+ */
+enum class ValueKind
+{
+    PRIMITIVE = 0,
+    REFERENCE,
     UNDEFINED,
 };
 
@@ -45,10 +56,13 @@ public:
     const std::string typeName;
     const AccessInfo accessInfo;
     const bool isStatic;
+    const bool isAMethod;
 
     TypeFieldInfo(const std::string& _typename, const AccessInfo &accInfo,
-                  const bool _isStatic): typeName(_typename),
-                  accessInfo(accInfo), isStatic(_isStatic) {}
+                  const bool _isStatic,
+                  const bool _isAMethod): typeName(_typename),
+                  accessInfo(accInfo), isStatic(_isStatic),
+                  isAMethod(_isAMethod) {}
 };
 
 /* Extract type information from the class definition in the source code.*/
