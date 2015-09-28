@@ -22,7 +22,7 @@ instruction set which is the target of our compiler. Details will be decided in
 future.
 
 ### Future goals
-1. Abstract datatypes - I'd like to support abstract datatypes with simple
+1. Algebraic datatypes - I'd like to support algebraic datatypes with simple
 syntax. 
 
 2. Protocols - A protocol is like a Java interface - it specifies the methods
