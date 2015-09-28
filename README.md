@@ -1,10 +1,9 @@
 ## Avaj
-    Avaj project is a programming language with a compiler and a runtime. The
+Avaj project is a programming language with a compiler and a runtime. The
 language is a statically typed, class based OO language. The compiler and the
-runtime for Avaj are written in C++.
-
-	This is a fun personal project for me to learn about writing compilers &
-language runtimes, one I hope will be meaningfully executed.
+runtime for Avaj are written in C++. This is a fun personal project for me to
+learn about writing compilers & language runtimes, one I hope will be
+meaningfully executed.
 
 ### Main features
 1.	Static language - The compiler will parse the source code, check for
