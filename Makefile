@@ -1,10 +1,12 @@
-CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
+INC_OPTS := -I. -I'compiler' -I'compiler/parsing' -I'compiler/core'\
+	-I'compiler/semantics'
+CC := g++ -g -std=c++11 -Wall ${INC_OPTS}
 
 ###################### PROJECT OVERALL STRUCTURE ##############################
 
 all: components test_drivers 
 
-components: base lexer parser
+components: base lexer parser core 
 
 base: syntax_error source_buffer
 
@@ -67,3 +69,13 @@ parser_driver: parser tests/ParserDriver.cpp
 # Clean every module and every exe.
 clean:
 	rm -rf obj/* bin/*
+
+################################ CORE TARGETS #################################
+CORE_DIR := compiler/core
+
+core: primitives
+
+primitives: ${CORE_DIR}/Primitives.cpp
+	${CC} -c -o obj/Primitives ${CORE_DIR}/Primitives.cpp
+########################## SEMANTIC ANALYSER TARGETS ##########################
+SEM_ANALYSER_DIR := compiler/semantics
