@@ -23,3 +23,13 @@ This table can be used to verify their proper usage.
 3. All compiler needs to do now is to check every statement in the code and
 verify according to the statement type. e.g., assignment statement must satisfy
 that the var and RHS must have the same type, member access must be valid etc..
+
+4.  Avaj language supports arithmetic, logical and other operators in its
+expressions. The compiler parses such expressions and implicitly converts them
+into relevant methods supported by the operand types. e.g., the expression 
+"AS" + "EFG" is converted to "AS".append("EFG") and 1 + 23 to 1.add(23) etc..
+If the operator and operands don't match, it's a type error and the compiler
+must report it.
+
+This phase only verifies that program is correct at the type level. Still other
+kinds of errors are checked for in later phases.

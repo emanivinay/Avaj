@@ -21,8 +21,22 @@ Avaj runtime is a small VM built to execute Avaj programs. It comes with an
 instruction set which is the target of our compiler. Details will be decided in
 future.
 
+### Versioning
+1.  Avaj language versions are named {MAJOR-VERSION}.{MINOR-VERSION}. Current
+version is 0.1
+
+2.  At important milestones, the existing version is frozen and is made
+available as a separate branch on the repo. Development moves on to the next
+version number.
+
+
 ### Future goals
-1. Algebraic datatypes - I'd like to support algebraic datatypes with simple
+
+0.  Array access syntax must be implemented. e.g., if nameList is an array,
+expressions like nameList[2], nameList[2][3] must be supported. As of v0.1,
+this is not a priority.
+
+1.  Algebraic datatypes - I'd like to support algebraic datatypes with simple
 syntax. 
 
 2. Protocols - A protocol is like a Java interface - it specifies the methods
