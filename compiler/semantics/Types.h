@@ -24,27 +24,6 @@ enum class ValueKind
 };
 
 /**
- * TypeInfo holds certain basic information about the types - memory
- * size of the type's objects, info about its members etc.. - useful during
- * compilation phase.
- */
-class TypeInfo
-{
-public:
-    const int objectSizeInMemory;
-    const std::map<std::string, TypeFieldInfo> fieldMap;
-
-    TypeInfo(const int objSize,
-             const std::map<std::string, TypeFieldInfo>& _fieldMap):
-        objectSizeInMemory(objSize), fieldMap(_fieldMap)
-    {
-        if (objSize <= 0) {
-            throw std::logic_error("Object size can never be negative.");
-        }
-    }
-};
-
-/**
  * TypeFieldInfo holds information about members of a datatype - methods and
  * data fields. Information such as the type(return type for methods and types
  * of members), access info(private vs public), instance field vs class field
@@ -65,8 +44,67 @@ public:
                   isAMethod(_isAMethod) {}
 
     TypeFieldInfo():
-        typeName(""), accessInfo(AccessInfo::INVALID),
+        typeName(""), accessInfo(AccessInfo::UNDEFINED),
         isStatic(false), isAMethod(false) {}
+
+    // All fields must exactly be equal.
+    bool operator==(const TypeFieldInfo& typeInfo)
+    {
+        return typeName == typeInfo.typeName &&
+               accessInfo == typeInfo.accessInfo &&
+               isStatic == typeInfo.isStatic &&
+               isAMethod == typeInfo.isAMethod;
+    }
+};
+
+/*
+ * TypeMethodInfo is like TypeFieldInfo, but it stores the full method
+ * signature including its parameter types as well.
+ **/
+class TypeMethodInfo
+{
+public:
+    const TypeFieldInfo typeFieldInfo;
+    const std::vector<std::string> paramTypes;
+
+    TypeMethodInfo(const TypeFieldInfo& _tFInfo=TypeFieldInfo(),
+                const std::vector<std::string>& 
+                _paramTypes=std::vector<std::string>()):
+        typeFieldInfo(_tFInfo), paramTypes(_paramTypes) {}
+
+    bool operator==(const TypeMethodInfo& tMInfo)
+    {
+        // Two method signatures clash if their names, return typesd
+        // parameter types match. Here, we assume that method names are
+        // already matching.
+        return typeFieldInfo.typeName == tMInfo.typeFieldInfo.typeName
+                    && paramTypes == tMInfo.paramTypes;
+    }
+};
+
+/**
+ * TypeInfo holds certain basic information about the types - memory
+ * size of the type's objects, info about its members etc.. - useful during
+ * compilation phase.
+ */
+class TypeInfo
+{
+public:
+    const int objectSizeInMemory;
+    const std::map<std::string, TypeFieldInfo> fieldMap;
+    const std::map<std::string, std::vector<TypeMethodInfo> > methodMap;
+
+    TypeInfo(const int objSize,
+             const std::map<std::string, TypeFieldInfo>& _fieldMap,
+             const std::map<std::string, std::vector<TypeMethodInfo>>& 
+                                                    _methodMap):
+        objectSizeInMemory(objSize), fieldMap(_fieldMap),
+        methodMap(_methodMap)
+    {
+        if (objSize <= 0) {
+            throw std::logic_error("Object size can never be negative.");
+        }
+    }
 };
 
 /* Extract type information from the class definition in the source code.*/

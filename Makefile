@@ -6,7 +6,7 @@ CC := g++ -g -std=c++11 -Wall ${INC_OPTS}
 
 all: components test_drivers 
 
-components: base lexer parser core 
+components: base lexer parser core semantics
 
 base: syntax_error source_buffer
 
@@ -79,3 +79,8 @@ primitives: ${CORE_DIR}/Primitives.cpp
 	${CC} -c -o obj/Primitives ${CORE_DIR}/Primitives.cpp
 ########################## SEMANTIC ANALYSER TARGETS ##########################
 SEM_ANALYSER_DIR := compiler/semantics
+
+semantics: types
+
+types:
+	${CC} -c -o obj/Types ${SEM_ANALYSER_DIR}/Types.cpp
