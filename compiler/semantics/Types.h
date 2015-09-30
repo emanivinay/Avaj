@@ -63,6 +63,10 @@ public:
                   const bool _isAMethod): typeName(_typename),
                   accessInfo(accInfo), isStatic(_isStatic),
                   isAMethod(_isAMethod) {}
+
+    TypeFieldInfo():
+        typeName(""), accessInfo(AccessInfo::INVALID),
+        isStatic(false), isAMethod(false) {}
 };
 
 /* Extract type information from the class definition in the source code.*/

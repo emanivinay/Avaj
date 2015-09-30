@@ -18,4 +18,5 @@ memory management system will control their life cycle.
 3.  Given a type definition(e.g. as a `Class` structure from parsing), compiler
 must be able to extract certain information about the type - size occupied by
 its objects in memory, information about its members etc.. TypeInfo class
-defined in [Types.h](Types.h) holds that information.
+defined in [Types.h](Types.h) holds that information. More information is at
+[TypeCheckingAlgorithm.md](TypeCheckingAlgorithm.md).
