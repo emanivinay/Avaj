@@ -29,6 +29,12 @@ version is 0.1
 available as a separate branch on the repo. Development moves on to the next
 version number.
 
+### TODO
+1.  Type checking
+2.  Other kinds of error checking
+3.  VM design & implementation
+4.  Primitive types
+5.  Code generation
 
 ### Future goals
 
