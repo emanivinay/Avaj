@@ -4,6 +4,13 @@
 /* Extract type information from the class definition.*/
 TypeInfo extractTypeInfo(Class *classTree)
 {
+    // TypeInfo contains three pieces of data
+    // 1. Size of the type's objects in bytes.
+    // 2. Info. about its data field - type, access, static/instance.
+    // 3. Info. about its methods - type, access, stat/inst, method param
+    // types.
+    
+    // Object size.
     int objSize = 0;
     for (auto& fld: classTree->dataFields) {
         const std::string& fieldType = fld->typeName;
@@ -13,6 +20,7 @@ TypeInfo extractTypeInfo(Class *classTree)
         else objSize += getPrimitiveTypeSize("Ref");
     }
 
+    // Data fields.
     std::map<std::string, TypeFieldInfo> fieldMap;
     for (auto& fld: classTree->dataFields) {
         if (fieldMap.count(fld->typeName))
@@ -29,7 +37,7 @@ TypeInfo extractTypeInfo(Class *classTree)
                                   fld->staticness, false)));
     }
 
-    // Map of names to methods.
+    // Methods.
     std::map<std::string, std::vector<TypeMethodInfo> > methodMap;
     for (auto& mthd: classTree->methods) {
         if (fieldMap.count(mthd->name)) {
