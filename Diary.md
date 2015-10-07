@@ -125,3 +125,11 @@ proper typing. This means that code must be written for each statement type. In
 addition, since statement blocks create new scopes, care must be taken when
 dealing with variable assignments and declarations. All in all type checking
 will require significant effort on my part.
+
+### 10/07/15
+
+*   So far, the representation consists of AST and its children node
+classes(Expression, Statement etc..). A different(better?) representation is
+needed for type checking and other kinds of analyses. Such an IR will include
+information about symbols(e.g. a symbol table), loops in the code etc.. I'll
+work on this new IR and write a AST to IR converter.
