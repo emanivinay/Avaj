@@ -109,4 +109,7 @@ public:
 
 /* Extract type information from the class definition in the source code.*/
 TypeInfo extractTypeInfo(Class *classTree);
+
+/* Check for any type errors in the code. */
+bool typeCheck(const TypeInfo& typeInfo, AST *ast);
 #endif

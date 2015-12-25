@@ -74,3 +74,12 @@ TypeInfo extractTypeInfo(Class *classTree)
 
     return TypeInfo(objSize, fieldMap, methodMap);
 }
+
+bool typeCheck(const TypeInfo& typeInfo, AST *ast)
+{
+    // TODO(vinay) - Implement typeCheck().
+    for (auto& cls: ast->classes) {
+    }
+
+    return true;
+}
