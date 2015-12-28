@@ -1,0 +1,233 @@
+class int{
+    size: 4;
+    methods:
+        add:
+            int int;
+            long long;
+            float float;
+            double double;
+        subtract:
+            int int;
+            long long;
+            float float;
+            double double;
+        multiply:
+            int int;
+            long long;
+            float float;
+            double double;
+        divide:
+            int int;
+            long long;
+            float float;
+            double double;
+        modulo:
+            int int;
+            long long;
+        eq:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        gt:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        lt:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        ge:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        le:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        xor:
+            int int;
+            long long;
+        and:
+            int int;
+            long long;
+}
+
+class boolean{
+    size: 1;
+};
+
+class long{
+    size: 8;
+    methods:
+        add:
+            long int;
+            long long;
+            double float;
+            double double;
+        subtract:
+            long int;
+            long long;
+            double float;
+            double double;
+        multiply:
+            long int;
+            long long;
+            double float;
+            double double;
+        divide:
+            long int;
+            long long;
+            double float;
+            double double;
+        modulo:
+            long int;
+            long long;
+        eq:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        gt:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        lt:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        ge:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        le:
+            boolean int;
+            boolean long;
+            boolean float;
+            boolean double;
+        xor:
+            long int;
+            long long;
+        and:
+            long int;
+            long long;
+};
+
+class float{
+    size: 4;
+    methods:
+        add:
+            float int;
+            float float;
+            double long;
+            double double;
+        subtract:
+            float int;
+            float float;
+            double long;
+            double double;
+        multiply:
+            float int;
+            float float;
+            double long;
+            double double;
+        divide:
+            float int;
+            float float;
+            double long;
+            double double;
+        gt:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        lt:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        eq:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        ge:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        le:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+};
+
+class double{
+    size: 8;
+    methods:
+        add:
+            double int;
+            double float;
+            double long;
+            double double;
+        subtract:
+            double int;
+            double float;
+            double long;
+            double double;
+        multiply:
+            double int;
+            double float;
+            double long;
+            double double;
+        divide:
+            double int;
+            double float;
+            double long;
+            double double;
+        gt:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        lt:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        eq:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        ge:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+        le:
+            boolean int;
+            boolean float;
+            boolean long;
+            boolean double;
+};
+
+class char{
+    size: 1;
+    methods:
+        ;
+};
+
+class ref{
+    size: 8;
+    methods:
+        ;
+};
