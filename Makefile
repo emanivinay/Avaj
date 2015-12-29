@@ -1,4 +1,5 @@
-CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing'
+CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing' \
+	  -I 'compiler/types'
 
 ###################### PROJECT OVERALL STRUCTURE ##############################
 
@@ -72,7 +73,10 @@ parser_driver: parser tests/ParserDriver.cpp
 ########################### TYPES TARGETS #####################################
 TYPES_DIR := compiler/types
 
-types: parser type method builtin userdefined
+types: parser hl_reader type method builtin userdefined
+
+hl_reader: ${TYPES_DIR}/HLReader.h ${TYPES_DIR}/HLReader.cpp
+	${CC} -c -o obj/HLReader ${TYPES_DIR}/HLReader.cpp
 
 type: ${TYPES_DIR}/Type.h
 
