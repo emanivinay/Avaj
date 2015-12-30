@@ -10,7 +10,7 @@ components: base lexer parser types
 base: syntax_error source_buffer
 
 test_drivers: source_buffer_driver lexer_driver expression_driver \
-			  parser_driver statement_driver
+			  parser_driver statement_driver hl_reader_driver
 
 ########################### BASE TARGETS ######################################
 
@@ -77,6 +77,9 @@ types: parser hl_reader type method builtin userdefined
 
 hl_reader: ${TYPES_DIR}/HLReader.h ${TYPES_DIR}/HLReader.cpp
 	${CC} -c -o obj/HLReader ${TYPES_DIR}/HLReader.cpp
+
+hl_reader_driver: hl_reader tests/HLReaderDriver.cpp
+	${CC} -o bin/HLReaderDriver obj/HLReader tests/HLReaderDriver.cpp
 
 type: ${TYPES_DIR}/Type.h
 

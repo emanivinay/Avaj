@@ -22,8 +22,7 @@ BuiltinType *BuiltinType::readType(std::ifstream& source)
     reader.expectOrThrow(":");
     std::vector<Method> methods;
     while (true) {
-        // TODO(vinay) - Finish BuiltinType::readType().
-        break;
+        std::string mthd_name = reader.read<std::string>();
     }
 
     return new BuiltinType(name, size, methods);

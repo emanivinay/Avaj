@@ -32,7 +32,7 @@ std::vector<std::string> HLReader::tokenize(const std::string& word)
     // <string>, (, )
     const int n = (int)word.size();
     const std::vector<std::string> keywords {"class", "{", "}", "size",
-            ":", ";", "method", "(", ")"};
+            ":", ";", "methods", "(", ")"};
     int i;
     for (i = 0;i < n; ) {
         bool tokenFound = false;
@@ -59,7 +59,8 @@ std::vector<std::string> HLReader::tokenize(const std::string& word)
         }
 
         int start = i;
-        while (word[i] != '{' && word[i] != ':' && word[i] != ';') {
+        while (i < n && (word[i] != '{'
+                && word[i] != ':' && word[i] != ';')) {
             i++;
         }
 

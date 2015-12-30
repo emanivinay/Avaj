@@ -15,19 +15,19 @@ public:
     /* Data occupied by an object of this type, in bytes.*/
     const int size;
 
-    BuiltinType(const std::string& _name, const int _size,
-                const std::vector<Method>& _methods);
-
     /* Methods supported for this type.*/
     const std::vector<Method> methods;
 
-    // Return the size occupied in memory by objects of this type.
+    BuiltinType(const std::string& _name, const int _size,
+                const std::vector<Method>& _methods);
+
+    /* Return the size occupied in memory by objects of this type.*/
     int getSize() const;
 
-    // Parse a builtin type from a source file.
+    /* Parse a builtin type from a source file.*/
     static BuiltinType *readType(std::ifstream& source);
 
-    // Return a list of all the methods supported by this type.
+    /* Return the list of all the methods supported by this type.*/
     std::vector<Method> getMethods() const;
 };
 #endif
