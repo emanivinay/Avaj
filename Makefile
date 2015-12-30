@@ -1,5 +1,5 @@
 CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing' \
-	  -I 'compiler/types'
+	  -I'compiler/types' -I'common'
 
 ###################### PROJECT OVERALL STRUCTURE ##############################
 
