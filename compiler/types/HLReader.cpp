@@ -92,5 +92,6 @@ void HLReader::parseOrThrow(const std::string& strToken)
 {
     std::string next = read<std::string>();
     if (next.empty() || next != strToken)
-        throw MalformedFileInput("Read an unexpected token.");
+        throw MalformedFileInput("Read an unexpected token "
+                + next + " instead of the expected " + strToken);
 }

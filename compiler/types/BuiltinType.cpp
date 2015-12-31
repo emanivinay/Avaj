@@ -21,37 +21,51 @@ BuiltinType *BuiltinType::readType(std::ifstream& source)
     reader.parseOrThrow("methods");
     reader.parseOrThrow(":");
     std::vector<Method> methods;
+    
+    // Read the list of method declarations.
     while (true) {
-        std::string mthd_name = reader.read<std::string>();
-        if (mthd_name.empty()) {
-            throw MalformedFileInput(
-                    "Unexpected end to builtin class spec.");
-        } else if (mthd_name == "}") {
-            // End of the class spec.
+        // read <METHOD_NAME> ":"
+        std::string methodName = reader.read<std::string>();
+        if (methodName == "}") {
+            // End of type spec.
             break;
-        } else {
-            // Read ':'.
-            reader.parseOrThrow(":");
-            while (true) {
-                std::string retType = reader.read<std::string>();
-                if (retType.empty())
-                    throw MalformedFileInput(
-                        "Unexpected end to builtin class spec.");
-                std::string argType = reader.read<std::string>();
-                if (argType.empty())
-                    throw MalformedFileInput(
-                        "Unexpected end to builtin class spec.");
-                else if (argType == ":") {
-                    // New method starts.
-                    reader.read_back(retType);
-                    reader.read_back(":");
-                    break;
-                } else {
-                    reader.parseOrThrow(";");
-                    methods.push_back(Method(mthd_name, retType,
-                                            {argType}));
-                }
+        } else if (methodName == ";") {
+            // End of all methods. Just read "}"
+            reader.parseOrThrow("}");
+            break;
+        }
+        else if (methodName.empty()) {
+            throw MalformedFileInput(
+                    "Unexpected end of file");
+        }
+        reader.parseOrThrow(":");
+
+        while (true) {
+            // read <RETURN_TYPE> <ARG_TYPE> ";"
+            std::string retType = reader.read<std::string>();
+            if (retType == "}") {
+                reader.read_back("}");
+                break;
             }
+            else if (retType.empty()) {
+                throw MalformedFileInput(
+                        "Unexpected end of file reading return type.");
+            }
+
+            std::string argType = reader.read<std::string>();
+            if (argType == ":") {
+                // This is a new method, break out of the inner loop.
+                reader.read_back(":");
+                reader.read_back(retType);
+                break;
+            }
+            else if (argType.empty()) {
+                throw MalformedFileInput(
+                        "Unexpected end of file reading argument type.");
+            }
+
+            reader.parseOrThrow(";");
+            methods.push_back(Method(methodName, retType, {argType}));
         }
     }
 

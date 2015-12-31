@@ -13,7 +13,7 @@ class SymbolTable;
  */
 class Type
 {
-protected:
+public:
     /* Name of the type.*/
     const std::string name;
 

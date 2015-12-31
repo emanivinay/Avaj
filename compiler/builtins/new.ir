@@ -59,7 +59,9 @@ class int{
 
 class boolean{
     size: 1;
-};
+    methods:
+        ;
+}
 
 class long{
     size: 8;
@@ -118,7 +120,7 @@ class long{
         and:
             long int;
             long long;
-};
+}
 
 class float{
     size: 4;
@@ -168,7 +170,7 @@ class float{
             boolean float;
             boolean long;
             boolean double;
-};
+}
 
 class double{
     size: 8;
@@ -218,16 +220,16 @@ class double{
             boolean float;
             boolean long;
             boolean double;
-};
+}
 
 class char{
     size: 1;
     methods:
         ;
-};
+}
 
 class ref{
     size: 8;
     methods:
         ;
-};
+}
