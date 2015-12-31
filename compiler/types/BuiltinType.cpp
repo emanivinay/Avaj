@@ -7,6 +7,10 @@
 BuiltinType *BuiltinType::readType(std::ifstream& source)
 {
     HLReader reader(source);
+    if (reader.eof()) {
+        // No more type specs present in the ir file. Return nullptr.
+        return nullptr;
+    }
     reader.parseOrThrow("class");
     std::string name = reader.read<std::string>();
     reader.parseOrThrow("{");

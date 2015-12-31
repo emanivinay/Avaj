@@ -12,9 +12,6 @@ public:
     /* Inherit constructor from Type.*/
     using Type::Type;
 
-    /* Return the size occupied in memory by objects of this type.*/
-    int getSize() const;
-
     /* Parse a builtin type from a source file. Returns nullptr if theres 
      * no more type spec to be read(i.e. EOF is reached). Throws
      * MalformedFileInput exception when the spec format is incorrect.

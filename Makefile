@@ -10,7 +10,8 @@ components: base lexer parser types
 base: syntax_error source_buffer
 
 test_drivers: source_buffer_driver lexer_driver expression_driver \
-			  parser_driver statement_driver hl_reader_driver
+			  parser_driver statement_driver hl_reader_driver \
+			  builtin_type_reader_driver
 
 ########################### BASE TARGETS ######################################
 
@@ -87,8 +88,12 @@ hl_reader_driver: hl_reader tests/HLReaderDriver.cpp
 method: ${TYPES_DIR}/Method.h ${TYPES_DIR}/Method.cpp
 	${CC} -c -o obj/Method ${TYPES_DIR}/Method.cpp
 
-builtin: ${TYPES_DIR}/BuiltinType.h ${TYPES_DIR}/BuiltinType.cpp
+builtin: method type ${TYPES_DIR}/BuiltinType.h ${TYPES_DIR}/BuiltinType.cpp
 	${CC} -c -o obj/BuiltinType ${TYPES_DIR}/BuiltinType.cpp
+
+builtin_type_reader_driver: type hl_reader builtin tests/BuiltinTypeReaderDriver.cpp
+	${CC} -o bin/BuiltinTypeReaderDriver obj/Type obj/HLReader obj/Method \
+	obj/BuiltinType tests/BuiltinTypeReaderDriver.cpp
 
 #################################### CLEAN ####################################
 # Clean every module and every exe.

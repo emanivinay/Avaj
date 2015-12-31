@@ -29,7 +29,7 @@ public:
      * than the actual size occupied by the objects of this type in RAM because
      * of, say, alignment restrictions.
      */
-    virtual int getSize() const = 0;
+    virtual int getSize() const;
 
     /* Return the list of all methods supported by this type.*/
     virtual std::vector<Method> getMethods() const = 0;
@@ -39,7 +39,5 @@ public:
      */
     static Type *getExpressionType(const Expression *expr,
                                    const SymbolTable& symTab);
-
-    virtual ~Type() = 0;
 };
 #endif
