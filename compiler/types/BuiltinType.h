@@ -9,22 +9,16 @@
 class BuiltinType: public Type
 {
 public:
-    /* Name of the type.*/
-    const std::string name;
-
-    /* Data occupied by an object of this type, in bytes.*/
-    const int size;
-
-    /* Methods supported for this type.*/
-    const std::vector<Method> methods;
-
-    BuiltinType(const std::string& _name, const int _size,
-                const std::vector<Method>& _methods);
+    /* Inherit constructor from Type.*/
+    using Type::Type;
 
     /* Return the size occupied in memory by objects of this type.*/
     int getSize() const;
 
-    /* Parse a builtin type from a source file.*/
+    /* Parse a builtin type from a source file. Returns nullptr if theres 
+     * no more type spec to be read(i.e. EOF is reached). Throws
+     * MalformedFileInput exception when the spec format is incorrect.
+     */
     static BuiltinType *readType(std::ifstream& source);
 
     /* Return the list of all the methods supported by this type.*/

@@ -8,15 +8,6 @@
 class UserDefinedType: public Type
 {
 public:
-    /* Name of the type. */
-    const std::string name;
-
-    /* Total size of all the data fields in this type.*/
-    const int size;
-
-    /* All the methods for this type.*/
-    const std::vector<Method> methods;
-
     /* Read type info of a user defined type from an Avaj class 
      * definition.
      */

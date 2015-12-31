@@ -27,10 +27,20 @@ private:
 public:
     HLReader(std::ifstream& source);
 
+    /* Returns true if the input source is complete and no more tokens to
+     * be read or false if there are still more tokens.
+     */
+    bool eof();
+
     /* Either parse the given token successfully or throw an exception
      * otherwise.
      */
-    void expectOrThrow(const std::string& strToken);
+    void parseOrThrow(const std::string& strToken);
+
+    /* Push the token back into buffer in case of parse failure and must be
+     * retried.
+     */
+    void read_back(const std::string& strToken);
 
     /* Read a token of the template type. BEWARE, >> can throw an
      * exception.

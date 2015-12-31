@@ -1,28 +1,54 @@
+#include "exceptions.h"
 #include "BuiltinType.h"
 #include "HLReader.h"
 
-BuiltinType::BuiltinType(const std::string& _name, const int _size,
-                         const std::vector<Method>& _methods):
-    name(_name), size(_size), methods(_methods)
-{
-}
-
-// Read BuiltinType definition from a high level representation.
+/* Read BuiltinType definition from a high level representation.
+ */
 BuiltinType *BuiltinType::readType(std::ifstream& source)
 {
     HLReader reader(source);
-    reader.expectOrThrow("class");
+    reader.parseOrThrow("class");
     std::string name = reader.read<std::string>();
-    reader.expectOrThrow("{");
-    reader.expectOrThrow("size");
-    reader.expectOrThrow(":");
+    reader.parseOrThrow("{");
+    reader.parseOrThrow("size");
+    reader.parseOrThrow(":");
     int size = reader.read<int>();
-    reader.expectOrThrow(";");
-    reader.expectOrThrow("methods");
-    reader.expectOrThrow(":");
+    reader.parseOrThrow(";");
+    reader.parseOrThrow("methods");
+    reader.parseOrThrow(":");
     std::vector<Method> methods;
     while (true) {
         std::string mthd_name = reader.read<std::string>();
+        if (mthd_name.empty()) {
+            throw MalformedFileInput(
+                    "Unexpected end to builtin class spec.");
+        } else if (mthd_name == "}") {
+            // End of the class spec.
+            break;
+        } else {
+            // Read ':'.
+            reader.parseOrThrow(":");
+            while (true) {
+                std::string retType = reader.read<std::string>();
+                if (retType.empty())
+                    throw MalformedFileInput(
+                        "Unexpected end to builtin class spec.");
+                std::string argType = reader.read<std::string>();
+                if (argType.empty())
+                    throw MalformedFileInput(
+                        "Unexpected end to builtin class spec.");
+                else if (argType == ":") {
+                    // New method starts.
+                    reader.read_back(retType);
+                    reader.read_back(":");
+                    break;
+                } else {
+                    reader.parseOrThrow(";");
+                    methods.push_back(Method(mthd_name, retType,
+                                            {argType}));
+                }
+            }
+        }
     }
 
     return new BuiltinType(name, size, methods);

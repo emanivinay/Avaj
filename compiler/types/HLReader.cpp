@@ -1,3 +1,4 @@
+#include "exceptions.h"
 #include "HLReader.h"
 
 HLReader::HLReader(std::ifstream& _source):
@@ -5,24 +6,39 @@ HLReader::HLReader(std::ifstream& _source):
 {
 }
 
-std::string HLReader::getNextToken()
+bool HLReader::eof()
 {
-    if (tokenBuffer.empty()) {
-        // Read more input from the source.
-        std::string str;
-        if (!(source >> str)) {
-            return ""; // Empty string marks end of input.
-        }
-
-        // Tokenize the word and append them to the buffer.
-        std::vector<std::string> tokens = tokenize(str);
-        tokenBuffer.insert(tokenBuffer.end(),
-                           tokens.begin(), tokens.end());
+    if (!tokenBuffer.empty())
+        return false;
+    std::string str;
+    if (!(source >> str)) {
+        return true;
     }
 
+    // Read more words from the source and tokenize them + queue them in
+    // the buffer.
+    std::vector<std::string> tokens = tokenize(str);
+    tokenBuffer.insert(tokenBuffer.end(),
+                       tokens.begin(), tokens.end());
+    return false;
+}
+
+std::string HLReader::getNextToken()
+{
+    // No more tokens in the buffer nor any more words to be read from
+    // the source.
+    if (eof())
+        return "";
+
+    // Buffer is not empty. Pop the first token.
     std::string ret = tokenBuffer[0];
     tokenBuffer.erase(tokenBuffer.begin());
     return ret;
+}
+
+void HLReader::read_back(const std::string& strToken)
+{
+    tokenBuffer.insert(tokenBuffer.begin(), strToken);
 }
 
 std::vector<std::string> HLReader::tokenize(const std::string& word)
@@ -68,13 +84,13 @@ std::vector<std::string> HLReader::tokenize(const std::string& word)
     }
 
     if (i != n)
-        throw std::exception();
+        throw MalformedFileInput("Invalid word in the class spec.");
     return ret;
 }
 
-void HLReader::expectOrThrow(const std::string& strToken)
+void HLReader::parseOrThrow(const std::string& strToken)
 {
     std::string next = read<std::string>();
     if (next.empty() || next != strToken)
-        throw std::exception();
+        throw MalformedFileInput("Read an unexpected token.");
 }

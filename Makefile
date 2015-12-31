@@ -73,15 +73,16 @@ parser_driver: parser tests/ParserDriver.cpp
 ########################### TYPES TARGETS #####################################
 TYPES_DIR := compiler/types
 
-types: parser hl_reader type method builtin userdefined
+types: parser hl_reader type method builtin
+
+type: ${TYPES_DIR}/Type.h ${TYPES_DIR}/Type.cpp
+	${CC} -c -o obj/Type ${TYPES_DIR}/Type.cpp
 
 hl_reader: ${TYPES_DIR}/HLReader.h ${TYPES_DIR}/HLReader.cpp
 	${CC} -c -o obj/HLReader ${TYPES_DIR}/HLReader.cpp
 
 hl_reader_driver: hl_reader tests/HLReaderDriver.cpp
 	${CC} -o bin/HLReaderDriver obj/HLReader tests/HLReaderDriver.cpp
-
-type: ${TYPES_DIR}/Type.h
 
 method: ${TYPES_DIR}/Method.h ${TYPES_DIR}/Method.cpp
 	${CC} -c -o obj/Method ${TYPES_DIR}/Method.cpp

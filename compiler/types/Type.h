@@ -3,8 +3,8 @@
 
 #include "headers.h"
 #include "Expression.h"
+#include "Method.h"
 
-class Method;
 class SymbolTable;
 
 /* An abstract class to represent Avaj types. Builtin types and user defined
@@ -13,7 +13,18 @@ class SymbolTable;
  */
 class Type
 {
+protected:
+    /* Name of the type.*/
+    const std::string name;
+
+    /* Total size of all data fields in this type.*/
+    const int size;
+
+    /* List of the methods supported by this type.*/
+    const std::vector<Method> methods;
 public:
+    Type(const std::string _name, const int _size,
+         const std::vector<Method>& methods);
     /* Get the total size of the data fields in this type. This may be less
      * than the actual size occupied by the objects of this type in RAM because
      * of, say, alignment restrictions.

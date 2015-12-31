@@ -7,5 +7,8 @@
 /* Badly formatted input file is encountered during compilation.*/
 class MalformedFileInput: public std::runtime_error
 {
+public:
+    MalformedFileInput(const std::string& what):
+        std::runtime_error(what) {}
 };
 #endif
