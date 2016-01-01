@@ -13,14 +13,16 @@
 class UserDefinedType: public Type
 {
 private:
-    std::vector<TypeDataField> dataFields;
-    std::vector<TypeMethod> methods;
+    const std::vector<TypeDataField> dataFields;
+    const std::vector<TypeMethod> methods;
+    const bool isPublic;
 
     /* Constructs an UserDefinedType object. `size' field is unused at
      * the moment.
      */
     UserDefinedType(const std::string& typeName,
                     const int size,
+                    const bool _isPublic,
                     const std::vector<TypeDataField>& fields,
                     const std::vector<TypeMethod>& methods);
 public:
