@@ -71,3 +71,16 @@ BuiltinType *BuiltinType::readType(std::ifstream& source)
 
     return new BuiltinType(name, size, methods);
 }
+
+std::vector<BuiltinType*> BuiltinType::readBuiltins(std::ifstream& src)
+{
+    std::vector<BuiltinType*> ret;
+    while (true) {
+        BuiltinType *type = readType(src);
+        if (!type)
+            break;
+        ret.push_back(type);
+    }
+
+    return ret;
+}

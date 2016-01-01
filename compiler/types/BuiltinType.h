@@ -17,5 +17,9 @@ public:
      * MalformedFileInput exception when the spec format is incorrect.
      */
     static BuiltinType *readType(std::ifstream& source);
+
+    /** Read a list of builtin specs until the input source is all consumed.
+     */
+    static std::vector<BuiltinType*> readBuiltins(std::ifstream& source);
 };
 #endif
