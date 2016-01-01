@@ -74,7 +74,7 @@ parser_driver: parser tests/ParserDriver.cpp
 ########################### TYPES TARGETS #####################################
 TYPES_DIR := compiler/types
 
-types: parser hl_reader type method builtin
+types: parser hl_reader type method builtin user_defined
 
 type: ${TYPES_DIR}/Type.h ${TYPES_DIR}/Type.cpp
 	${CC} -c -o obj/Type ${TYPES_DIR}/Type.cpp
@@ -94,6 +94,10 @@ builtin: method type ${TYPES_DIR}/BuiltinType.h ${TYPES_DIR}/BuiltinType.cpp
 builtin_type_reader_driver: type hl_reader builtin tests/BuiltinTypeReaderDriver.cpp
 	${CC} -o bin/BuiltinTypeReaderDriver obj/Type obj/HLReader obj/Method \
 	obj/BuiltinType tests/BuiltinTypeReaderDriver.cpp
+
+user_defined: method type ${TYPES_DIR}/UserDefinedType.h \
+			  ${TYPES_DIR}/UserDefinedType.cpp
+	${CC} -c -o obj/UserDefinedType ${TYPES_DIR}/UserDefinedType.cpp
 
 #################################### CLEAN ####################################
 # Clean every module and every exe.

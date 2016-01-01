@@ -17,8 +17,5 @@ public:
      * MalformedFileInput exception when the spec format is incorrect.
      */
     static BuiltinType *readType(std::ifstream& source);
-
-    /* Return the list of all the methods supported by this type.*/
-    std::vector<Method> getMethods() const;
 };
 #endif

@@ -20,7 +20,7 @@ BuiltinType *BuiltinType::readType(std::ifstream& source)
     reader.parseOrThrow(";");
     reader.parseOrThrow("methods");
     reader.parseOrThrow(":");
-    std::vector<Method> methods;
+    std::vector<TypeMethod> methods;
     
     // Read the list of method declarations.
     while (true) {
@@ -70,9 +70,4 @@ BuiltinType *BuiltinType::readType(std::ifstream& source)
     }
 
     return new BuiltinType(name, size, methods);
-}
-
-std::vector<Method> BuiltinType::getMethods() const
-{
-    return methods;
 }
