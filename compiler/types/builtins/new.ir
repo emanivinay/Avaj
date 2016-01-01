@@ -233,3 +233,9 @@ class ref{
     methods:
         ;
 }
+
+class void{
+    size: 4;
+    methods:
+        ;
+}
