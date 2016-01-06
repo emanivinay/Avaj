@@ -3,8 +3,6 @@
 
 #include "headers.h"
 
-class Type;
-
 /* Method signature has the method name, its return type and its argument
  * types.
  */
