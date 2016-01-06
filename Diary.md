@@ -117,3 +117,11 @@ for a simple virtual machine.
 
 *   I had a few good wins today. First, I learned to use ddd to debug c++
 programs. I am close to finishing the parsing part.
+
+### 01/06/16 
+
+*   Logging in after a long time. I'm implementing the type checking. Avaj type
+system is relatively simple - You have types(user defined classes + builtins)
+each with a well defined interface. Thus type checking now consists of simply
+verifying that all statements are valid typewise. In the future, I want Avaj to
+support interface based polymorphism and parametric types.
