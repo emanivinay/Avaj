@@ -5,7 +5,7 @@ CC := g++ -g -std=c++11 -Wall -I. -I'compiler' -I'compiler/parsing' \
 
 all: components test_drivers 
 
-components: base lexer parser types
+components: base lexer parser symbol_table types
 
 base: syntax_error source_buffer
 
@@ -102,6 +102,11 @@ user_defined: method type ${TYPES_DIR}/UserDefinedType.h \
 type_checking: builtin user_defined ${TYPES_DIR}/TypeChecking.h \
 				${TYPES_DIR}/TypeChecking.cpp
 	${CC} -c -o obj/TypeChecking ${TYPES_DIR}/TypeChecking.cpp
+
+############################## SYMBOL TABLE ###################################
+SYMTABDIR := compiler/symbol_table
+
+symbol_table:
 
 #################################### CLEAN ####################################
 # Clean every module and every exe.
