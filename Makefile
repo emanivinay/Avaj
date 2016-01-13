@@ -112,18 +112,3 @@ symbol_table:
 # Clean every module and every exe.
 clean:
 	rm -rf obj/* bin/*
-
-################################ CORE TARGETS #################################
-CORE_DIR := compiler/core
-
-core: primitives
-
-primitives: ${CORE_DIR}/Primitives.cpp
-	${CC} -c -o obj/Primitives ${CORE_DIR}/Primitives.cpp
-########################## SEMANTIC ANALYSER TARGETS ##########################
-SEM_ANALYSER_DIR := compiler/semantics
-
-semantics: types
-
-types:
-	${CC} -c -o obj/Types ${SEM_ANALYSER_DIR}/Types.cpp
