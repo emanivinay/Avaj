@@ -86,10 +86,10 @@ semantics of the language.
 am reasonably confident what I have now is mostly correct. We'll see, now onto
 language semantics.
 
-*   Semantics -> What constitutes the semantics of a language?
+    *   Semantics -> What constitutes the semantics of a language?
     *   Central paradigm - OOP model in Avaj's case. 
     *   Type system - Language type systems vary along a number of dimensions -
-Static/Dynamic/Hybrid, Strict/Permissive, expressivity etc..
+        Static/Dynamic/Hybrid, Strict/Permissive, expressivity etc..
     *   Concurrency support - Concurrency is not supported in the first version
     *   Runtime behavior - Evaluation model, Memory model, Concurrency etc..
     *   Any thing else?
@@ -117,6 +117,22 @@ for a simple virtual machine.
 
 *   I had a few good wins today. First, I learned to use ddd to debug c++
 programs. I am close to finishing the parsing part.
+
+### 10/02/15
+
+*   I started working on type checking. Each statement must be checked for
+proper typing. This means that code must be written for each statement type. In
+addition, since statement blocks create new scopes, care must be taken when
+dealing with variable assignments and declarations. All in all type checking
+will require significant effort on my part.
+
+### 10/07/15
+
+*   So far, the representation consists of AST and its children node
+classes(Expression, Statement etc..). A different(better?) representation is
+needed for type checking and other kinds of analyses. Such an IR will include
+information about symbols(e.g. a symbol table), loops in the code etc.. I'll
+work on this new IR and write a AST to IR converter.
 
 ### 01/06/16 
 
