@@ -1,5 +1,4 @@
-#ifndef _HLREADER_H_
-#define _HLREADER_H_
+#pragma once
 
 #include "headers.h"
 
@@ -55,4 +54,3 @@ public:
         return ret;
     }
 };
-#endif

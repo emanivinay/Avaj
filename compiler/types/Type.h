@@ -1,5 +1,4 @@
-#ifndef _TYPE_H_
-#define _TYPE_H_
+#pragma once
 
 #include "headers.h"
 #include "Expression.h"
@@ -84,4 +83,3 @@ public:
     static Type *getExpressionType(const Expression *expr,
                                    const SymbolTable& symTab);
 };
-#endif

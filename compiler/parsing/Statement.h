@@ -1,5 +1,4 @@
-#ifndef _STATEMENT_H_
-#define _STATEMENT_H_
+#pragma once
 
 #include "headers.h"
 #include "TokenBuffer.h"
@@ -326,4 +325,3 @@ public:
  * valid statement object or throws a SyntaxError exception.
  */
 ParseResult<Statement*> *parseStmt(TokenBuffer& tokenBuffer);
-#endif

@@ -1,5 +1,4 @@
-#ifndef _TYPE_CHECKING_H_
-#define _TYPE_CHECKING_H_
+#pragma once
 
 /** This module implements the type checking algorithm.
  */
@@ -16,4 +15,3 @@ enum class TypeCheckResult
 
 /* Perform type checking on a single module.*/
 TypeCheckResult checkTypes(const AST *ast);
-#endif

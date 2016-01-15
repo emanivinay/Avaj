@@ -1,5 +1,4 @@
-#ifndef _PARSER_UTILS_H_
-#define _PARSER_UTILS_H_
+#pragma once
 
 #include "headers.h"
 #include "Lexer.h"
@@ -52,4 +51,3 @@ inline bool parseKeywordOptional(const std::string& kwd, TokenBuffer& tokenBuffe
         return false;
     }
 }
-#endif

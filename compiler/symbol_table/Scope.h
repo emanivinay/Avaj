@@ -1,5 +1,4 @@
-#ifndef _SCOPE_H_
-#define _SCOPE_H_
+#pragma once
 
 #include "headers.h"
 #include "Expression.h"
@@ -38,4 +37,3 @@ private:
     /* All the variable bindings in the current scope. */
     std::map<std::string, std::pair<std::string, const Expression*> > bindings;
 };
-#endif

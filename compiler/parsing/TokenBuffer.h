@@ -1,5 +1,4 @@
-#ifndef _TOKEN_BUFFER_H_
-#define _TOKEN_BUFFER_H_
+#pragma once
 
 #include "headers.h"
 #include "SyntaxError.h"
@@ -98,4 +97,3 @@ private:
     std::vector<Token> tokenList;
     int tokenIndex;
 };
-#endif

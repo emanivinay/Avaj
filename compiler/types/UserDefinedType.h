@@ -1,5 +1,4 @@
-#ifndef _USER_DEFINED_TYPE_H_
-#define _USER_DEFINED_TYPE_H_
+#pragma once
 
 #include "headers.h"
 #include "Type.h"
@@ -31,4 +30,3 @@ public:
      */
     static UserDefinedType *readType(const Class *cls);
 };
-#endif

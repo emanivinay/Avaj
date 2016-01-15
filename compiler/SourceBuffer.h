@@ -1,5 +1,4 @@
-#ifndef _SOURCE_BUFFER_H_
-#define _SOURCE_BUFFER_H_
+#pragma once
 
 #include "headers.h"
 
@@ -84,4 +83,3 @@ private:
     /* Read fresh data from input file and strip the comments. */
     void readIntoBuffer();
 };
-#endif

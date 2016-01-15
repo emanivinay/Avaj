@@ -1,5 +1,4 @@
-#ifndef _EXPRESSION_H_
-#define _EXPRESSION_H_
+#pragma once
 
 #include "ParseResult.h"
 #include "TokenBuffer.h"
@@ -281,4 +280,3 @@ ParseResult<IDOrMethodCall*> *parseIDOrMethodCall(const std::vector<Token>&,
                                                  bool id, int, int&);
 
 ParseResult<Expression*> *parseMemberRef(const std::vector<Token>&, int, int&);
-#endif

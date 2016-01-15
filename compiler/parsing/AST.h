@@ -1,5 +1,4 @@
-#ifndef _AST_H_
-#define _AST_H_
+#pragma once
 
 #include "headers.h"
 #include "SyntaxError.h"
@@ -34,4 +33,3 @@ public:
 
     static ParseResult<AST*>* tryParse(TokenBuffer& tokenBuffer);
 };
-#endif

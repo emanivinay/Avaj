@@ -1,5 +1,4 @@
-#ifndef _LEXER_H_
-#define _LEXER_H_
+#pragma once
 
 #include "headers.h"
 #include "SourceBuffer.h"
@@ -245,4 +244,3 @@ private:
         }
     }
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef _PARSER_H_
-#define _PARSER_H_
+#pragma once
 
 #include "headers.h"
 #include "SyntaxError.h"
@@ -26,4 +25,3 @@ public:
 private:
     TokenBuffer tokenBuffer;
 };
-#endif

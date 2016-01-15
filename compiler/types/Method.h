@@ -1,5 +1,4 @@
-#ifndef _METHOD_H_
-#define _METHOD_H_
+#pragma once
 
 #include "headers.h"
 
@@ -16,4 +15,3 @@ public:
     Method(const std::string& name, const std::string retType,
            const std::vector<std::string>& args);
 };
-#endif

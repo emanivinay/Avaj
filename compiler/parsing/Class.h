@@ -1,5 +1,4 @@
-#ifndef _CLASS_H_
-#define _CLASS_H_
+#pragma once
 
 #include "headers.h"
 #include "SyntaxError.h"
@@ -89,4 +88,3 @@ public:
 
     static ParseResult<Class*>* tryParse(TokenBuffer& tokenBuffer);
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef _SYMBOL_TABLE_H_
-#define _SYMBOL_TABLE_H_
+#pragma once
 
 #include "headers.h"
 #include "Scope.h"
@@ -16,4 +15,3 @@ public:
 
     std::string getVariableType(const std::string& name);
 };
-#endif

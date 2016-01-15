@@ -1,5 +1,4 @@
-#ifndef _SYNTAX_ERROR_H_
-#define _SYNTAX_ERROR_H_
+#pragma once
 
 #include "headers.h"
 
@@ -23,4 +22,3 @@ private:
     // A description of the error.
     std::string desc;
 };
-#endif

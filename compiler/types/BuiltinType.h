@@ -1,5 +1,4 @@
-#ifndef _BUILTIN_TYPE_H_
-#define _BUILTIN_TYPE_H_
+#pragma once
 
 #include "headers.h"
 #include "Type.h"
@@ -22,4 +21,3 @@ public:
      */
     static std::vector<BuiltinType*> readBuiltins(std::ifstream& source);
 };
-#endif

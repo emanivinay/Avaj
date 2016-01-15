@@ -1,5 +1,4 @@
-#ifndef _PARSE_RESULT_H_
-#define _PARSE_RESULT_H_
+#pragma once
 
 #include "headers.h"
 
@@ -65,4 +64,3 @@ public:
 private:
     const T parseResult;
 };
-#endif
