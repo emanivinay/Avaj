@@ -1,5 +1,4 @@
-#ifndef _HEADERS_H_
-#define _HEADERS_H_
+#pragma once
 
 #include <cctype>
 #include <cstdio>
@@ -16,4 +15,3 @@
 #include <stdexcept>
 #include <exception>
 #include <memory>
-#endif
