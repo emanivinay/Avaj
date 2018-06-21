@@ -5,7 +5,7 @@ runtime for Avaj are written in C++. This is a fun personal project for me to
 learn about writing compilers & language runtimes, one I hope will be
 meaningfully executed.
 
-### Main features
+### Avaj language 
 1.	Static language - The compiler will parse the source code, check for
 syntax, type and other logical errors and will emit code for a target machine
 (a vm in this case). Thus at runtime, we simply have an executable code that can

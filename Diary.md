@@ -141,3 +141,7 @@ system is relatively simple - You have types(user defined classes + builtins)
 each with a well defined interface. Thus type checking now consists of simply
 verifying that all statements are valid typewise. In the future, I want Avaj to
 support interface based polymorphism and parametric types.
+
+### 22/06/18
+
+*   Picking this up after a long long time, from a different bitbucket account.
