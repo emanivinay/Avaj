@@ -210,7 +210,7 @@ Token Lexer::getNextToken()
         // |, ||, |=, ||=
         CharUnit newUnit = sourceBuffer.getCharUnit();
         if (newUnit.chr == '=') {
-            return _Token(TokenType::BITWISE_OR_EQ, "&=");
+            return _Token(TokenType::BITWISE_OR_EQ, "|=");
         } else if (newUnit.chr == '|') {
             CharUnit nxtUnit = sourceBuffer.getCharUnit();
             if (nxtUnit.chr == '=') {

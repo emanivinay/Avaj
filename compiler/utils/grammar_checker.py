@@ -1,6 +1,5 @@
 import sys
 
-
 def get_word(line):
     while line and line[0].isspace():
         line = line[1:]
@@ -12,11 +11,9 @@ def get_word(line):
 
     return line[c:i], line[i:]
 
-
 def is_a_good_rule_sym(word):
     return word and word[0].isupper() and\
         all(c.isupper() or c == '_' for c in word)
-
 
 def parse_grammar_line(line):
 
@@ -40,10 +37,8 @@ def parse_grammar_line(line):
 
     return gen_wrd, [p for p in parts if is_a_good_rule_sym(p)]
 
-
 def is_symbol(part):
     return part and part[0].isupper()
-
 
 def check_grammar_and_report(grammar_file):
     with open(grammar_file, 'r') as f:
@@ -69,10 +64,8 @@ def check_grammar_and_report(grammar_file):
     for sym in all_symbols.difference(symbols_with_rules):
         print sym, "has no generating rule"
 
-
 def main():
     check_grammar_and_report(sys.argv[1])
-
 
 if __name__ == '__main__':
     main()
